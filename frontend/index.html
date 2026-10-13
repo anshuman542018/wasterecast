@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101411">
+  <title>WasteRecast — Waste, reconsidered.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/styles.css">
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail" aria-label="Sections">
+      <a class="brandmark" href="/" aria-label="WasteRecast home"><span class="mark-a"></span><span class="mark-b"></span></a>
+      <div class="rail-line"></div>
+      <div class="rail-label">P.A / 26</div>
+      <div class="rail-bottom">↗</div>
+    </aside>
+    <main>
+      <header class="topbar">
+        <div class="wordmark">WASTE<span>RECAST</span></div>
+        <div class="top-links"><a href="#workspace">Workspace</a><a href="#sources">Data sources</a><span id="cloud-status" class="status"><i></i> Checking stack</span></div>
+      </header>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span> MATERIAL INTELLIGENCE / INDIA</p>
+          <h1>Waste has a<br><em>second life.</em></h1>
+          <p class="hero-desc">Turn industrial by-products into sourced recovery leads. Every candidate has an evidence trail. Every uncertainty stays visible.</p>
+          <a class="text-link" href="#workspace">Start a material screening <span>↗</span></a>
+        </div>
+        <div class="hero-art" aria-hidden="true"><div class="orb orb-one"></div><div class="orb orb-two"></div><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><span class="art-number">01 / MATERIALS IN MOTION</span></div>
+      </section>
+
+      <section class="stat-strip" aria-label="Catalog facts">
+        <div><strong id="facility-count">—</strong><span>Public facility listings</span></div>
+        <div><strong id="source-count">—</strong><span>State board sources</span></div>
+        <div><strong>05</strong><span>Material families</span></div>
+        <div class="stat-note">SOURCE-ATTRIBUTED · STATUS REQUIRES VERIFICATION</div>
+      </section>
+
+      <section id="workspace" class="workspace">
+        <div class="section-heading"><p class="eyebrow">THE WORKSPACE / 01</p><h2>Find a path forward.</h2><p>Describe your stream or add a manifest or SDS. Gemini extracts the technical profile; the matching engine screens real public listings.</p></div>
+        <div class="work-grid">
+          <div class="input-panel">
+            <div class="panel-top"><span>01</span><h3>Material brief</h3><span class="panel-tag">INPUT</span></div>
+            <form id="profile-form">
+              <label for="description">What material do you have?</label>
+              <textarea id="description" name="description" rows="5" placeholder="For example: reactor wash containing toluene and IPA, approximately 12 tonnes per month..."></textarea>
+              <div class="form-grid">
+                <div><label for="origin-city">Origin city</label><input id="origin-city" name="origin_city" placeholder="Pune"></div>
+                <div><label for="origin-state">State</label><input id="origin-state" name="origin_state" placeholder="Maharashtra"></div>
+              </div>
+              <label for="quantity">Tonnes per month <small>Optional; no unit conversion guessed</small></label>
+              <input id="quantity" name="quantity_tonnes_per_month" type="number" min="0" step="any" placeholder="12">
+              <label for="flash-point">Measured flash point <small>°C, only if documented</small></label>
+              <input id="flash-point" name="flash_point_c" type="number" step="any" placeholder="Leave blank if unknown">
+              <label for="document">Manifest, SDS, or photo <small>PDF, PNG, JPEG, WebP, TXT · max 15 MB</small></label>
+              <div class="upload-line"><input id="document" name="document" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,application/pdf,image/png,image/jpeg,image/webp,text/plain"><span id="file-name">No file selected</span></div>
+              <label class="retention-choice"><input type="checkbox" name="retain_document" value="true"> Save my uploaded document in private Cloud Storage for follow-up</label>
+              <div class="form-actions"><button id="profile-button" class="primary-btn" type="submit">Profile with Gemini <span>↗</span></button><button id="scenario-button" class="quiet-btn" type="button">Load labeled scenario</button><button id="manual-button" class="quiet-btn" type="button">Screen manually</button></div>
+            </form>
+            <p class="input-note">Uploads are processed by Gemini and saved only if selected above. Extracted screening records are saved in Firestore when cloud is configured. A scenario is a demonstration input, not a claim about a real factory.</p>
+          </div>
+          <div class="output-panel" id="output-panel">
+            <div class="panel-top"><span>02</span><h3>Intelligence</h3><span class="panel-tag">LIVE OUTPUT</span></div>
+            <div id="empty-state" class="empty-state"><div class="empty-glyph">↗</div><h4>Start with what you know.</h4><p>We’ll surface what the document supports, what is missing, and which public facilities are worth contacting.</p></div>
+            <div id="profile-output" class="profile-output hidden"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="results" class="results hidden">
+        <div class="section-heading"><p class="eyebrow">SCREENING / 02</p><h2>Potential routes.</h2><p>These are sourcing leads. A current authorization, accepted specifications, available capacity, and a written quote are required before a transaction.</p></div>
+        <div class="result-layout">
+          <div><div class="results-toolbar"><span id="results-count">0 candidates</span><span>Ranked by state and district proximity</span></div><div id="candidate-list"></div></div>
+          <aside class="value-panel"><p class="eyebrow">COMMERCIAL MODEL</p><h3>Use real quotes.</h3><p>Enter your disposal cost and written buyer and transport quotes. The engine calculates the annual scenario value; blanks never become invented revenue.</p>
+            <label for="quoted-facility">Quoted facility</label><select id="quoted-facility"><option value="">Select a screened facility</option></select>
+            <label for="disposal-cost">Current disposal cost <small>₹ / tonne</small></label><input id="disposal-cost" type="number" min="0" step="any" placeholder="Enter actual cost">
+            <label for="buyer-quote">Buyer quote <small>₹ / tonne</small></label><input id="buyer-quote" type="number" step="any" placeholder="Enter written quote">
+            <label for="transport-quote">Transport quote <small>₹ / tonne</small></label><input id="transport-quote" type="number" min="0" step="any" placeholder="Enter actual quote">
+            <label for="pretreatment-quote">Pretreatment quote <small>₹ / tonne, if needed</small></label><input id="pretreatment-quote" type="number" min="0" step="any" placeholder="Optional">
+            <div class="value-total"><span>Annual scenario value</span><strong id="value-total">Pending quotes</strong></div><button id="recalculate" class="secondary-btn" type="button">Recalculate ↗</button><small class="value-caveat">Not a certified carbon saving, offer, or compliance decision.</small>
+          </aside>
+        </div>
+      </section>
+
+      <section id="sources" class="sources"><div class="section-heading"><p class="eyebrow">PROVENANCE / 03</p><h2>Show the source.</h2><p>Our catalog is extracted from public pollution control board documents. Click through to the original pages and confirm a facility’s current authorization with the board.</p></div><div id="source-list" class="source-list"></div></section>
+      <footer><div class="wordmark">WASTE<span>RECAST</span></div><p>Industrial material intelligence, with the uncertainty left in view.</p><span>AI BUILDER CUP 2026</span></footer>
+    </main>
+  </div>
+  <div id="toast" role="alert" class="toast hidden"></div>
+</body>
+</html>

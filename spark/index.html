@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08090b">
+  <title>WasteRecast — Waste, reconsidered.</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/cinematic.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail" aria-label="Sections">
+      <a class="brandmark" href="/" aria-label="WasteRecast home"><span class="mark-a"></span><span class="mark-b"></span></a>
+      <div class="rail-line"></div>
+      <div class="rail-label">WR / 26</div>
+      <div class="rail-bottom">↗</div>
+    </aside>
+    <main>
+      <header class="topbar">
+        <div class="wordmark">WASTE<span>RECAST</span></div>
+        <div class="top-links"><a href="#workspace">Workspace</a><a href="#sources">Data sources</a><span id="cloud-status" class="status"><i></i> Checking stack</span></div>
+      </header>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span> MATERIAL INTELLIGENCE / WORLDWIDE</p>
+          <h1>Waste isn't<br><em>the end.</em></h1>
+          <p class="hero-desc">Find the next use for waste and surplus material: solids, liquids, organics, electronics, and more. Profile a stream with Gemini, then screen source-backed recovery leads and the proof still needed.</p>
+          <a class="text-link" href="#workspace">Start screening <span>→</span></a>
+        </div>
+        <div class="hero-art conversion-scene" role="img" aria-label="Illustrative animation showing plastic offcuts becoming pellets, textile scraps becoming yarn, and concrete rubble becoming aggregate.">
+          <div class="scene-topline"><span>THREE MATERIAL LOOPS</span><span>01 / 03</span></div>
+          <div class="material-loops" aria-hidden="true">
+            <div class="material-loop"><span class="loop-number">01 / POLYMERS</span><div class="loop-objects"><span class="loop-waste plastic-waste"><i></i><i></i><i></i></span><span class="loop-process">SORT + SHRED <b>→</b></span><span class="loop-product pellets"><i></i><i></i><i></i><i></i><i></i><i></i></span></div><div class="loop-labels"><span>PLASTIC OFFCUTS</span><span>RECYCLED PELLETS</span></div></div>
+            <div class="material-loop"><span class="loop-number">02 / TEXTILES</span><div class="loop-objects"><span class="loop-waste textile-waste"><i></i><i></i><i></i></span><span class="loop-process">RE-FIBER <b>→</b></span><span class="loop-product yarn"><i></i></span></div><div class="loop-labels"><span>FABRIC SCRAPS</span><span>NEW YARN</span></div></div>
+            <div class="material-loop"><span class="loop-number">03 / MINERALS</span><div class="loop-objects"><span class="loop-waste rubble-waste"><i></i><i></i><i></i></span><span class="loop-process">CRUSH + TEST <b>→</b></span><span class="loop-product aggregate"><i></i><i></i><i></i><i></i></span></div><div class="loop-labels"><span>CONCRETE RUBBLE</span><span>NEW AGGREGATE</span></div></div>
+          </div>
+          <svg class="conversion-svg" viewBox="0 0 680 430" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#45484e"/><stop offset=".47" stop-color="#202328"/><stop offset="1" stop-color="#111317"/></linearGradient>
+              <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b9d0d0" stop-opacity=".2"/><stop offset=".5" stop-color="#fff" stop-opacity=".06"/><stop offset="1" stop-color="#a4c1c4" stop-opacity=".18"/></linearGradient>
+              <linearGradient id="wasteLiquid" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e16a42"/><stop offset="1" stop-color="#723b29"/></linearGradient>
+              <linearGradient id="recoveredLiquid" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f6bd68"/><stop offset="1" stop-color="#c96b39"/></linearGradient>
+              <clipPath id="drumClip"><rect x="72" y="179" width="132" height="141" rx="12"/></clipPath>
+              <clipPath id="productClip"><path d="M516 221h104v102q0 10-10 10h-84q-10 0-10-10z"/></clipPath>
+            </defs>
+            <path class="floor-line" d="M34 338H648"/>
+            <g class="drum">
+              <ellipse cx="138" cy="177" rx="68" ry="17" fill="#56595d"/>
+              <rect x="70" y="177" width="136" height="147" rx="13" fill="url(#steel)" stroke="#85888a" stroke-width="2"/>
+              <g clip-path="url(#drumClip)"><rect class="waste-fill" x="73" y="228" width="130" height="92" fill="url(#wasteLiquid)" opacity=".7"/></g>
+              <path d="M71 203h135M71 295h135" stroke="#73767a" stroke-width="8" opacity=".65"/>
+              <ellipse cx="138" cy="177" rx="68" ry="17" fill="#3c3f42" stroke="#878a8c" stroke-width="2"/>
+              <ellipse cx="138" cy="177" rx="42" ry="8" fill="#24272a" stroke="#676a6d"/>
+              <path d="M119 162v-16h39v16" fill="none" stroke="#a7a8a8" stroke-width="6" stroke-linecap="round"/>
+              <rect x="100" y="232" width="77" height="48" rx="3" fill="#d4d0c4"/><text x="138" y="250" text-anchor="middle" class="svg-small-dark">SPENT</text><text x="138" y="266" text-anchor="middle" class="svg-small-dark">SOLVENT</text>
+            </g>
+            <g class="pipes">
+              <path d="M206 248h48v-40h37" class="pipe"/><path d="M206 248h48v-40h37" class="flow flow-waste"/>
+              <path d="M389 171h42v73h77" class="pipe"/><path d="M389 171h42v73h77" class="flow flow-product"/>
+            </g>
+            <g class="still">
+              <rect x="286" y="123" width="106" height="204" rx="23" fill="url(#steel)" stroke="#9b9b99" stroke-width="2"/>
+              <path d="M296 163h86M296 282h86" stroke="#7b7c7d" stroke-width="8" opacity=".8"/>
+              <path d="M311 196c22 22 37-22 62 0M311 222c22 22 37-22 62 0M311 248c22 22 37-22 62 0" fill="none" stroke="#d18a60" stroke-width="5" stroke-linecap="round"/>
+              <rect x="312" y="135" width="55" height="15" rx="4" fill="#202327" stroke="#8b8e8f"/>
+              <circle class="still-indicator" cx="339" cy="304" r="8" fill="#f26b4f"/>
+              <path d="M311 327v11m57-11v11" stroke="#7d8082" stroke-width="8"/>
+            </g>
+            <g class="product">
+              <path d="M534 211v-27h68v27" fill="none" stroke="#a6adae" stroke-width="9" stroke-linecap="round"/>
+              <rect x="511" y="213" width="114" height="123" rx="12" fill="url(#glass)" stroke="#b7c1c1" stroke-width="3"/>
+              <g clip-path="url(#productClip)"><rect class="product-fill" x="516" y="267" width="104" height="66" fill="url(#recoveredLiquid)" opacity=".9"/></g>
+              <path d="M526 226v94" stroke="#fff" stroke-opacity=".23" stroke-width="5" stroke-linecap="round"/>
+              <rect x="527" y="246" width="82" height="36" rx="3" fill="#171a1d" opacity=".9"/><text x="568" y="260" text-anchor="middle" class="svg-small-light">RECOVERED</text><text x="568" y="274" text-anchor="middle" class="svg-small-light">SOLVENT</text>
+            </g>
+            <text x="138" y="369" text-anchor="middle" class="svg-stage">01  WASTE STREAM</text>
+            <text x="339" y="369" text-anchor="middle" class="svg-stage">02  DISTILLATION</text>
+            <text x="568" y="369" text-anchor="middle" class="svg-stage">03  NEW INPUT</text>
+          </svg>
+          <div class="scene-caption"><span class="pulse-dot"></span> ILLUSTRATIVE ROUTES · REAL RECOVERY REQUIRES MATERIAL TESTS &amp; PARTNER ACCEPTANCE</div>
+        </div>
+      </section>
+
+      <section class="stat-strip" aria-label="Catalog facts">
+        <div><strong id="facility-count">—</strong><span>India board listings</span></div>
+        <div><strong id="source-count">—</strong><span>Public data sources</span></div>
+        <div><strong>16</strong><span>Screenable material families</span></div>
+        <div class="stat-note">SOURCE-ATTRIBUTED · STATUS REQUIRES VERIFICATION</div>
+      </section>
+
+      <section id="workspace" class="workspace">
+        <div class="section-heading"><p class="eyebrow">THE WORKSPACE / 01</p><h2>Find a path forward.</h2><p>Describe any reusable waste stream or add a manifest, SDS, or photo. Gemini extracts a profile; the matching engine screens public listings where coverage exists.</p></div>
+        <div class="work-grid">
+          <div class="input-panel">
+            <div class="panel-top"><span>01</span><h3>Material brief</h3><span class="panel-tag">INPUT</span></div>
+            <form id="profile-form">
+              <label for="description">What material do you have?</label>
+              <textarea id="description" name="description" rows="5" placeholder="For example: 4 tonnes/month of clean cotton cutting scraps from a garment factory; mixed colors, no chemical treatment known..."></textarea>
+              <label for="material-family">Material family <small>Override automatic classification if needed</small></label><select id="material-family" name="material_family"><option value="auto">Auto detect from description</option></select>
+              <label for="origin-country">Country or region</label><select id="origin-country" name="origin_country"><option value="IN">India</option></select>
+              <div class="form-grid">
+                <div><label for="origin-city">Origin city</label><input id="origin-city" name="origin_city" placeholder="Pune"></div>
+                <div><label for="origin-state">State / province</label><input id="origin-state" name="origin_state" placeholder="Maharashtra"></div>
+              </div>
+              <label for="quantity">Tonnes per month <small>Optional; no unit conversion guessed</small></label>
+              <input id="quantity" name="quantity_tonnes_per_month" type="number" min="0" step="any" placeholder="12">
+              <label for="flash-point">Measured flash point <small>°C, only if documented</small></label>
+              <input id="flash-point" name="flash_point_c" type="number" step="any" placeholder="Leave blank if unknown">
+              <label for="document">Manifest, SDS, or photo <small>PDF, PNG, JPEG, WebP, TXT · max 10 MB</small></label>
+              <div class="upload-line"><input id="document" name="document" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,application/pdf,image/png,image/jpeg,image/webp,text/plain"><span id="file-name">No file selected</span></div>
+              <div class="form-actions"><button id="profile-button" class="primary-btn" type="submit">Profile with Gemini <span>↗</span></button><button id="scenario-button" class="quiet-btn" type="button">Load labeled scenario</button><button id="manual-button" class="quiet-btn" type="button">Screen manually</button></div>
+            </form>
+            <p id="ai-connection-status" class="input-note hidden" role="status"></p>
+            <p class="input-note">Gemini profiling uses the free Firebase AI Logic tier and requires browser App Check verification. If verification fails, manual screening remains available. Uploads go to Google's Gemini service under its free-tier data terms; use only files you are authorized to share. This site does not store them. The scenario is illustrative.</p>
+          </div>
+          <div class="output-panel" id="output-panel">
+            <div class="panel-top"><span>02</span><h3>Intelligence</h3><span class="panel-tag">LIVE OUTPUT</span></div>
+            <div id="empty-state" class="empty-state"><div class="empty-glyph">↗</div><h4>Start with what you know.</h4><p>We’ll surface what the document supports, what is missing, and which public facilities are worth contacting.</p></div>
+            <div id="profile-output" class="profile-output hidden"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="results" class="results hidden">
+        <div class="section-heading"><p class="eyebrow">YOUR SHORTLIST / 02</p><h2>Recovery leads.</h2><p>Explore a lead, ask Gemini about its fit, then compare real quotes. Facility acceptance still needs confirmation.</p></div>
+        <div class="result-layout">
+          <div><div class="results-toolbar"><span id="results-count">0 leads</span><button id="ai-shortlist" class="quiet-btn" type="button">Ask Gemini to assess ↗</button></div><div class="results-controls"><span id="ranking-description">Nearby locations first</span><label class="sr-only" for="results-filter">Show leads</label><select id="results-filter"><option value="active">Potential leads</option><option value="rejected">Excluded by source checks</option><option value="all">All results</option></select></div><div id="candidate-list"></div><button id="show-more-leads" class="secondary-btn hidden" type="button">Show more leads</button></div>
+          <aside class="value-panel"><p class="eyebrow">YOUR NEXT STEP</p><h3>Compare costs.</h3><div id="cost-empty"><p>Select <strong>Compare costs</strong> on a lead to open its quote calculator.</p><p class="cost-note">You’ll need a buyer quote and transport cost. No price has been quoted yet.</p></div><div id="cost-fields" class="hidden"><p id="cost-selected"></p><button id="close-costs" class="quiet-btn" type="button">Close calculator ×</button>
+            <label for="quoted-facility">Quoted facility</label><select id="quoted-facility"><option value="">Select a screened facility</option></select>
+            <label for="disposal-cost">Current disposal cost <small data-currency>INR / tonne</small></label><input id="disposal-cost" type="number" min="0" step="any" placeholder="Enter actual cost">
+            <label for="buyer-quote">Buyer quote <small data-currency>INR / tonne</small></label><input id="buyer-quote" type="number" step="any" placeholder="Enter written quote">
+            <label for="transport-quote">Transport quote <small data-currency>INR / tonne</small></label><input id="transport-quote" type="number" min="0" step="any" placeholder="Enter actual quote">
+            <label for="pretreatment-quote">Pretreatment quote <small data-currency>INR / tonne</small></label><input id="pretreatment-quote" type="number" min="0" step="any" placeholder="Optional">
+            <div class="value-total"><span>Annual scenario value</span><strong id="value-total">Pending quotes</strong></div><button id="recalculate" class="secondary-btn" type="button">Calculate value ↗</button><small class="value-caveat">Based on your entered quotes; not a purchase offer.</small></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="sources" class="sources"><div class="section-heading"><p class="eyebrow">PROVENANCE / 03</p><h2>Show the source.</h2><p>India catalog records come from public pollution board documents. Worldwide discovery uses open map data. Click through and independently verify every facility before contact or movement.</p></div><div id="source-list" class="source-list"></div></section>
+      <footer><div class="wordmark">WASTE<span>RECAST</span></div><p>Material recovery intelligence, with the uncertainty left in view.</p><span>AI BUILDER CUP 2026</span></footer>
+    </main>
+  </div>
+  <div id="toast" role="alert" class="toast hidden"></div>
+</body>
+</html>

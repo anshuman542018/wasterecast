@@ -1,0 +1,21 @@
+.venv/
+.tools/
+__pycache__/
+.pytest_cache/
+.env
+.env.*
+!.env.example
+# Local browser verification captures, not application assets.
+/parallax-live.png
+/wasterecast-*.png
+data/cache/
+*.pyc
+*.log
+node_modules/
+dist/
+.firebase/
+
+
+.vercel
+.env*
+!.env.example

@@ -1,0 +1,13 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /publicCatalog/{catalogId} {
+      allow read: if catalogId == 'india-v1';
+      allow write: if false;
+    }
+    match /publicCatalog/{catalogId}/chunks/{chunkId} {
+      allow read: if catalogId == 'india-v1';
+      allow write: if false;
+    }
+  }
+}

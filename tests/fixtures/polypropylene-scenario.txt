@@ -1,0 +1,12 @@
+ILLUSTRATIVE TEST SCENARIO — no real factory or buyer is represented.
+
+Material: Polypropylene injection molding offcuts.
+Quantity: 5 tonnes per month.
+Origin: Pune, Maharashtra, India.
+Coating: None reported by the scenario operator; not independently verified.
+Color mix: Mixed colors.
+Moisture: Not measured.
+Additives, contaminants and melt flow index: Unknown.
+Buyer acceptance, price and current authorizations: Not confirmed.
+
+Use this data to prepare a preliminary profile with unknowns clearly shown.

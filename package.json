@@ -1,0 +1,23 @@
+{
+  "name": "ai-builder-2026",
+  "version": "1.0.0",
+  "description": "A source-attributed waste recovery prototype that profiles many reusable material families with Gemini and screens public recycler records.",
+  "private": true,
+  "scripts": {
+    "dev": "vite spark --config vite.config.js",
+    "build": "vite build spark --config vite.config.js --outDir ../dist --emptyOutDir",
+    "test": "node --test tests/*.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "countries-list": "^3.4.1",
+    "firebase": "^13.0.0"
+  },
+  "devDependencies": {
+    "firebase-tools": "^15.33.0",
+    "vite": "^8.3.4"
+  }
+}
