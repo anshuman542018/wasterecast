@@ -7,6 +7,7 @@
   <title>WasteRecast — Waste, reconsidered.</title>
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/cinematic.css">
+  <link rel="stylesheet" href="/experience.css">
   <script type="module" src="/app.js"></script>
 </head>
 <body>
@@ -20,15 +21,15 @@
     <main>
       <header class="topbar">
         <div class="wordmark">WASTE<span>RECAST</span></div>
-        <div class="top-links"><a href="#workspace">Workspace</a><a href="#sources">Data sources</a><span id="cloud-status" class="status"><i></i> Checking stack</span></div>
+        <div class="top-links"><a href="#workspace" data-i18n="workspace">Workspace</a><button id="saved-open" class="utility-btn" type="button"><span data-i18n="saved">Saved leads</span> <span id="saved-count">0</span></button><label class="sr-only" for="language-select" data-i18n="language">Language</label><select id="language-select" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option><option value="es">Español</option></select><button id="theme-toggle" class="utility-btn" type="button" aria-pressed="false">Light mode</button><span id="cloud-status" class="status"><i></i> Checking stack</span></div>
       </header>
 
       <section class="hero">
         <div class="hero-copy">
           <p class="eyebrow"><span class="eyebrow-line"></span> MATERIAL INTELLIGENCE / WORLDWIDE</p>
-          <h1>Waste isn't<br><em>the end.</em></h1>
-          <p class="hero-desc">Find the next use for waste and surplus material: solids, liquids, organics, electronics, and more. Profile a stream with Gemini, then screen source-backed recovery leads and the proof still needed.</p>
-          <a class="text-link" href="#workspace">Start screening <span>→</span></a>
+          <h1 data-i18n="hero">Waste isn't<br><em>the end.</em></h1>
+          <p class="hero-desc" data-i18n="intro">Turn a waste description into recovery leads, source evidence and a clear next step.</p>
+          <a class="text-link" href="#workspace"><span data-i18n="start">Find a recovery route</span> →</a>
         </div>
         <div class="hero-art conversion-scene" role="img" aria-label="Illustrative animation showing plastic offcuts becoming pellets, textile scraps becoming yarn, and concrete rubble becoming aggregate.">
           <div class="scene-topline"><span>THREE MATERIAL LOOPS</span><span>01 / 03</span></div>
@@ -92,40 +93,41 @@
       </section>
 
       <section id="workspace" class="workspace">
-        <div class="section-heading"><p class="eyebrow">THE WORKSPACE / 01</p><h2>Find a path forward.</h2><p>Describe any reusable waste stream or add a manifest, SDS, or photo. Gemini extracts a profile; the matching engine screens public listings where coverage exists.</p></div>
+        <div class="section-heading"><p class="eyebrow">THE WORKSPACE / 01</p><h2 data-i18n="workTitle">What can your waste become?</h2><p data-i18n="workIntro">Describe your material. A document is optional. Review the AI profile, then find facilities worth contacting.</p></div>
+        <div class="flow-steps" aria-label="How it works"><span><b>1</b> <span data-i18n="brief">Your material</span></span><span><b>2</b> <span data-i18n="intelligence">Your material profile</span></span><span><b>3</b> <span data-i18n="leads">Recovery leads</span></span></div>
         <div class="work-grid">
           <div class="input-panel">
-            <div class="panel-top"><span>01</span><h3>Material brief</h3><span class="panel-tag">INPUT</span></div>
+            <div class="panel-top"><span>01</span><h3 data-i18n="brief">Your material</h3><span class="panel-tag">INPUT</span></div>
             <form id="profile-form">
-              <label for="description">What material do you have?</label>
-              <textarea id="description" name="description" rows="5" placeholder="For example: 4 tonnes/month of clean cotton cutting scraps from a garment factory; mixed colors, no chemical treatment known..."></textarea>
+              <label for="description" data-i18n="description">What waste or surplus do you have?</label>
+              <textarea id="description" name="description" rows="5" data-i18n-placeholder="placeholder" placeholder="For example: 5 tonnes/month of polypropylene offcuts in Pune. Describe what you know; leave unknown details out."></textarea>
               <label for="material-family">Material family <small>Override automatic classification if needed</small></label><select id="material-family" name="material_family"><option value="auto">Auto detect from description</option></select>
-              <label for="origin-country">Country or region</label><select id="origin-country" name="origin_country"><option value="IN">India</option></select>
+              <label for="origin-country" data-i18n="country">Country or region</label><select id="origin-country" name="origin_country"><option value="IN">India</option></select>
               <div class="form-grid">
-                <div><label for="origin-city">Origin city</label><input id="origin-city" name="origin_city" placeholder="Pune"></div>
-                <div><label for="origin-state">State / province</label><input id="origin-state" name="origin_state" placeholder="Maharashtra"></div>
+                <div><label for="origin-city" data-i18n="city">Origin city</label><input id="origin-city" name="origin_city" placeholder="Pune"></div>
+                <div><label for="origin-state" data-i18n="state">State / province</label><input id="origin-state" name="origin_state" placeholder="Maharashtra"></div>
               </div>
-              <label for="quantity">Tonnes per month <small>Optional; no unit conversion guessed</small></label>
+              <label for="quantity"><span data-i18n="quantity">Tonnes per month</span> <small>Optional</small></label>
               <input id="quantity" name="quantity_tonnes_per_month" type="number" min="0" step="any" placeholder="12">
               <label for="flash-point">Measured flash point <small>°C, only if documented</small></label>
               <input id="flash-point" name="flash_point_c" type="number" step="any" placeholder="Leave blank if unknown">
-              <label for="document">Manifest, SDS, or photo <small>PDF, PNG, JPEG, WebP, TXT · max 10 MB</small></label>
+              <details class="optional-upload" id="upload-details"><summary data-i18n="upload">Add a document or photo (optional)</summary><p data-i18n="uploadNote">No PDF needed. A description is enough. PDF, images or TXT; up to 10 MB.</p><label class="sr-only" for="document" data-i18n="upload">Add a document or photo (optional)</label>
               <div class="upload-line"><input id="document" name="document" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,application/pdf,image/png,image/jpeg,image/webp,text/plain"><span id="file-name">No file selected</span></div>
-              <div class="form-actions"><button id="profile-button" class="primary-btn" type="submit">Profile with Gemini <span>↗</span></button><button id="scenario-button" class="quiet-btn" type="button">Load labeled scenario</button><button id="manual-button" class="quiet-btn" type="button">Screen manually</button></div>
+              </details><div class="form-actions"><button id="profile-button" class="primary-btn" type="submit" data-i18n="profile">Understand my material</button><button id="scenario-button" class="quiet-btn" type="button" data-i18n="example">Try an example</button><button id="manual-button" class="quiet-btn" type="button" data-i18n="manual">Use manual screening</button></div>
             </form>
             <p id="ai-connection-status" class="input-note hidden" role="status"></p>
             <p class="input-note">Gemini profiling uses the free Firebase AI Logic tier and requires browser App Check verification. If verification fails, manual screening remains available. Uploads go to Google's Gemini service under its free-tier data terms; use only files you are authorized to share. This site does not store them. The scenario is illustrative.</p>
           </div>
           <div class="output-panel" id="output-panel">
-            <div class="panel-top"><span>02</span><h3>Intelligence</h3><span class="panel-tag">LIVE OUTPUT</span></div>
-            <div id="empty-state" class="empty-state"><div class="empty-glyph">↗</div><h4>Start with what you know.</h4><p>We’ll surface what the document supports, what is missing, and which public facilities are worth contacting.</p></div>
+            <div class="panel-top"><span>02</span><h3 data-i18n="intelligence">Your material profile</h3><span class="panel-tag">GEMINI</span></div>
+            <div id="empty-state" class="empty-state"><div class="empty-glyph">↗</div><h4 data-i18n="empty">Start with a description.</h4><p data-i18n="emptyNote">See the material facts, what is missing and the next step here.</p></div>
             <div id="profile-output" class="profile-output hidden"></div>
           </div>
         </div>
       </section>
 
       <section id="results" class="results hidden">
-        <div class="section-heading"><p class="eyebrow">YOUR SHORTLIST / 02</p><h2>Recovery leads.</h2><p>Explore a lead, ask Gemini about its fit, then compare real quotes. Facility acceptance still needs confirmation.</p></div>
+        <div class="section-heading"><p class="eyebrow">YOUR SHORTLIST / 02</p><h2 data-i18n="leads">Recovery leads</h2><p data-i18n="leadsIntro">Start with a lead, check its source and prepare an enquiry. A listing is not confirmed acceptance.</p></div>
         <div class="result-layout">
           <div><div class="results-toolbar"><span id="results-count">0 leads</span><button id="ai-shortlist" class="quiet-btn" type="button">Ask Gemini to assess ↗</button></div><div class="results-controls"><span id="ranking-description">Nearby locations first</span><label class="sr-only" for="results-filter">Show leads</label><select id="results-filter"><option value="active">Potential leads</option><option value="rejected">Excluded by source checks</option><option value="all">All results</option></select></div><div id="candidate-list"></div><button id="show-more-leads" class="secondary-btn hidden" type="button">Show more leads</button></div>
           <aside class="value-panel"><p class="eyebrow">YOUR NEXT STEP</p><h3>Compare costs.</h3><div id="cost-empty"><p>Select <strong>Compare costs</strong> on a lead to open its quote calculator.</p><p class="cost-note">You’ll need a buyer quote and transport cost. No price has been quoted yet.</p></div><div id="cost-fields" class="hidden"><p id="cost-selected"></p><button id="close-costs" class="quiet-btn" type="button">Close calculator ×</button>
@@ -139,10 +141,16 @@
         </div>
       </section>
 
+      <section class="decision-banner"><div><p class="eyebrow">THE VERIFICATION WORKSPACE</p><h2 data-i18n="readiness">From listing to a verified decision</h2><p data-i18n="readinessIntro">Save leads, track the evidence you have checked and prepare a focused acceptance enquiry. All checks start unconfirmed.</p></div><button id="saved-banner" class="secondary-btn" type="button" data-i18n="saved">Saved leads</button></section>
+
       <section id="sources" class="sources"><div class="section-heading"><p class="eyebrow">PROVENANCE / 03</p><h2>Show the source.</h2><p>India catalog records come from public pollution board documents. Worldwide discovery uses open map data. Click through and independently verify every facility before contact or movement.</p></div><div id="source-list" class="source-list"></div></section>
       <footer><div class="wordmark">WASTE<span>RECAST</span></div><p>Material recovery intelligence, with the uncertainty left in view.</p><span>AI BUILDER CUP 2026</span></footer>
     </main>
   </div>
   <div id="toast" role="alert" class="toast hidden"></div>
+  <button id="assistant-open" class="assistant-launch" type="button"><span aria-hidden="true">◉</span> <span data-i18n="assistant">Assistant</span></button>
+  <dialog id="assistant-dialog" class="app-dialog assistant-dialog" aria-labelledby="assistant-title"><div class="dialog-heading"><h2 id="assistant-title" data-i18n="voiceTitle">Your recovery assistant</h2><button class="dialog-close utility-btn" type="button" data-close="assistant-dialog" data-i18n="close">Close</button></div><p data-i18n="voiceIntro">Speak or type a request. I can fill the brief, find leads, explain a result and help compare quotes.</p><p class="assistant-example" data-i18n="voiceHelp"></p><form id="assistant-form"><label class="sr-only" for="assistant-input" data-i18n="assistant">Assistant</label><textarea id="assistant-input" rows="3" maxlength="6000" data-i18n-placeholder="voicePlaceholder"></textarea><div class="assistant-actions"><button id="voice-mic" type="button" class="secondary-btn" data-i18n="mic">Start microphone</button><button id="assistant-send" type="submit" class="primary-btn" data-i18n="send">Run request</button></div></form><label class="read-aloud"><input id="voice-read" type="checkbox"> <span data-i18n="reply">Read replies aloud</span></label><p id="assistant-plan" class="assistant-example"></p><p id="assistant-status" role="status" aria-live="polite"></p><p class="privacy-note" data-i18n="voicePrivacy"></p></dialog>
+  <dialog id="lead-dialog" class="app-dialog" aria-labelledby="lead-dialog-title"><div class="dialog-heading"><h2 id="lead-dialog-title" data-i18n="draft">Contact preparation</h2><button type="button" class="utility-btn" data-close="lead-dialog" data-i18n="close">Close</button></div><div id="lead-dialog-body"></div></dialog>
+  <dialog id="saved-dialog" class="app-dialog" aria-labelledby="saved-title"><div class="dialog-heading"><h2 id="saved-title" data-i18n="saved">Saved leads</h2><button type="button" class="utility-btn" data-close="saved-dialog" data-i18n="close">Close</button></div><div id="saved-list"></div><p class="privacy-note">Saved on this device only. No enquiry is sent automatically.</p></dialog>
 </body>
 </html>

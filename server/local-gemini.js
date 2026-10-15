@@ -1,10 +1,11 @@
 // Development-only private endpoint. Never imported by the browser build.
 import {generateWithFirebase} from '../spark/gemini.js';
 import {profileSchema, shortlistSchema} from '../spark/gemini-schema.js';
+import {assistantSchema} from '../spark/assistant-core.js';
 
 const MAX_BODY = 14_000_000;
-const kinds = {profile:profileSchema, shortlist:shortlistSchema, explain:null};
-export function localGeminiMiddleware({apiKey, fetchImpl = fetch, maxRequests = 20}) {
+const kinds = {profile:profileSchema, shortlist:shortlistSchema, explain:null,assistant:assistantSchema};
+export function localGeminiMiddleware({apiKey, fetchImpl = fetch, maxRequests = 20, port = 5173}) {
   let requests = 0;
   let resetAt = Date.now() + 3600000;
   let busy = false;
@@ -16,8 +17,8 @@ export function localGeminiMiddleware({apiKey, fetchImpl = fetch, maxRequests = 
     if (req.url !== '/private-api/gemini') return next();
     const origin = req.headers.origin;
     const host = req.headers.host;
-    if (!['127.0.0.1:5173','localhost:5173'].includes(host) ||
-      (origin && !['http://127.0.0.1:5173','http://localhost:5173'].includes(origin)) ||
+    if (![`127.0.0.1:${port}`,`localhost:${port}`].includes(host) ||
+      (origin && ![`http://127.0.0.1:${port}`,`http://localhost:${port}`].includes(origin)) ||
       req.headers['x-wasterecast-local'] !== '1') return reply(res,403,{error:'Local access only.'});
     if (req.method !== 'POST') return reply(res,405,{error:'Use POST.'});
     if (!apiKey) return reply(res,503,{error:'Set GEMINI_API_KEY in the root .env file and restart npm run dev.'});
