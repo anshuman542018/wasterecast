@@ -2,16 +2,33 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {RecastLiveSession} from '../spark/live-session.js';
 function setup(overrides={}){
-  const log={phases:[],actions:[],responses:[],tracks:0,closed:0,connects:0};let callback;
-  class Context{constructor(){this.audioWorklet={addModule:async()=>{}};}resume=async()=>{};close=async()=>{log.closed++;};createMediaStreamSource(){return{connect(){},disconnect(){}};}}
+  const log={phases:[],actions:[],responses:[],audio:[],inputs:[],tracks:0,closed:0,connects:0};let callback;
+  class Context{constructor(){this.sampleRate=48000;this.state='running';this.audioWorklet={addModule:async()=>{}};}resume=async()=>{};close=async()=>{log.closed++;};createMediaStreamSource(){return{connect(){},disconnect(){}};}createScriptProcessor(){return{connect(){},disconnect(){}};}}
   const stream={getTracks:()=>[{stop(){log.tracks++;}}],getAudioTracks:()=>[{addEventListener(){},enabled:true}]};
-  const socket={sendClientContent(){},sendRealtimeInput(){},sendToolResponse(value){log.responses.push(value);},close(){}};
+  const socket={sendClientContent(){},sendRealtimeInput(value){log.audio.push(value);},sendToolResponse(value){log.responses.push(value);},close(){}};
   const deps={AudioContext:Context,AudioWorkletNode:class{constructor(){this.port={};}connect(){}disconnect(){}},mediaDevices:{getUserMedia:async()=>stream},connect:async args=>{log.connects++;callback=args.callbacks;return socket;},...overrides};
-  const session=new RecastLiveSession({getSession:async()=>({token:'one-use',model:'test',config:{}}),onPhase:value=>log.phases.push(value),onTranscript(){},onError:value=>{log.error=value;},getContext:()=>({visible_leads:[]}),onAction:async value=>{log.actions.push(value);return'Completed';}},deps);
+  const session=new RecastLiveSession({getSession:async()=>({token:'one-use',model:'test',config:{}}),onPhase:value=>log.phases.push(value),onInput:value=>log.inputs.push(value),onTranscript(){},onError:value=>{log.error=value;},getContext:()=>({visible_leads:[]}),onAction:async value=>{log.actions.push(value);return'Completed';}},deps);
   return {session,log,stream,callback:()=>callback};
 }
 test('live session streams without browser SpeechRecognition and releases resources',async()=>{
   const {session,log}=setup();await session.start();assert.equal(session.active,true);assert.equal(log.connects,1);assert.equal(log.phases.at(-1),'listening');session.pause();assert.equal(log.tracks,1);assert.equal(log.closed,1);
+});
+test('captured PCM is actually forwarded, metered, and blocked while muted or stopped',async()=>{
+  const {session,log}=setup();await session.start();const handler=session.capture.port.onmessage;
+  const pcm=new ArrayBuffer(1024);new DataView(pcm).setInt16(0,1234,true);
+  for(let i=0;i<4;i++)handler({data:{pcm,rms:.1,peak:.2}});
+  assert.equal(log.audio.length,4);assert.equal(log.audio[0].audio.mimeType,'audio/pcm;rate=16000');assert.equal(Buffer.from(log.audio[0].audio.data,'base64').readInt16LE(0),1234);assert.equal(log.inputs.at(-1).state,'hearing');
+  session.muteInput(true);const count=log.audio.length;handler({data:{pcm,rms:.1}});assert.equal(log.audio.length,count);
+  session.pause();handler({data:{pcm,rms:.1}});assert.equal(log.audio.length,count);
+});
+test('a failed worklet uses the compatible audio capture path and releases it on stop',async()=>{
+  const {session,log}=setup({AudioWorkletNode:class{constructor(){throw Error('Processor unavailable');}}});await session.start();
+  assert.equal(session.compatibility,true);
+  session.capture.onaudioprocess({inputBuffer:{numberOfChannels:1,getChannelData:()=>new Float32Array(2048).fill(.2)},outputBuffer:{numberOfChannels:1,getChannelData:()=>new Float32Array(2048)}});
+  assert.ok(log.audio.some(x=>x.audio));session.pause();assert.equal(log.tracks,1);
+});
+test('switching a Windows input changes its track without spending another session token',async()=>{
+  const {session,log}=setup();await session.start();await session.changeMicrophone('headset');assert.equal(log.connects,1);assert.equal(log.tracks,1);session.pause();assert.equal(log.tracks,2);
 });
 test('cancelling pending microphone permission drops the late stream and never opens Gemini',async()=>{
   let resolve;const pending=new Promise(r=>{resolve=r;});const {session,log,stream}=setup({mediaDevices:{getUserMedia:()=>pending}});

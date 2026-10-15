@@ -124,3 +124,9 @@ Verification commands:
 - `python scripts/check_gemini.py --live-token`: deployed token endpoint, real Live audio and tool output, using a temporary App Check development credential revoked in finally. Production enforcement is unchanged.
 
 Physical microphone capture needs browser permission and an available input device. Keep that verification separate from generated speech and typed-to-audio tests.
+
+#### Windows microphone diagnostics
+
+Choose a laptop or headset input from the assistant's Microphone selector. Device changes replace the media track inside the same Live session without spending another token. The real PCM input level is displayed, and a separate receipt appears when Gemini transcribes speech. Quiet input, a suspended audio context, stalled processing and a disconnected microphone have distinct messages. A Resume audio control handles suspended browser audio. The app requests mono input and mixes all supplied channels before resampling; it no longer drops a microphone present only on the second channel. If the AudioWorklet fails or stops producing frames, an in-memory compatible capture path uses the same PCM encoder. Neither path stores a recording. Windows microphone and sound settings remain under user control.
+
+The generated-audio diagnostic now exercises the actual deployed worklet with speech only on channel two before streaming its PCM to Gemini. This verifies capture conversion and transport, not the user's physical device or Windows permissions.

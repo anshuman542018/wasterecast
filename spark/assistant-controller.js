@@ -5,7 +5,8 @@ import {RecastLiveSession} from './live-session.js';
 export function initAssistant({request,execute,getContext}){
   const $=selector=>document.querySelector(selector),dialog=$('#assistant-dialog');
   const status=$('#assistant-status'),input=$('#assistant-input'),transcripts=$('#live-transcript');
-  let session=null,phase='idle',running=false,minimising=false,generation=0;
+  let session=null,phase='idle',running=false,minimising=false,generation=0,selectedDevice='';
+  const micSelect=$('#microphone-select'),micStatus=$('#microphone-status'),meter=$('#microphone-level');
   const unfinished={};
   const labels={idle:'Ready when you are',starting:'Starting audio…',permission:'Allow microphone access in your browser',connecting:'Connecting to Gemini Live…',listening:'Listening — speak naturally',thinking:'Working in your workspace…',speaking:'Recast is speaking',error:'Connection needs attention'};
   function setPhase(value){
@@ -21,8 +22,28 @@ export function initAssistant({request,execute,getContext}){
     $('#assistant-open').setAttribute('aria-label',active?'Open assistant — live voice session active':'Open recovery assistant');
     $('#voice-dock').hidden=!active||dialog.open;
     $('#voice-dock-status').textContent=$('#live-phase').textContent;
+    if(!session?.active){meter.value=0;micStatus.textContent='Microphone is off';$('#microphone-resume').hidden=true;}
+    else if(session.inputMuted){meter.value=0;micStatus.textContent='Microphone muted';}
   }
-  function transcript(speaker,text,finished){
+  async function loadMicrophones(stream=session?.stream){
+    if(!navigator.mediaDevices?.enumerateDevices)return;
+    try{
+      const devices=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='audioinput');
+      micSelect.replaceChildren(new Option('System default microphone',''));
+      devices.forEach((d,i)=>{if(d.deviceId)micSelect.add(new Option(d.label || `Microphone ${i+1}`,d.deviceId));});
+      const active=stream?.getAudioTracks()[0]?.getSettings?.().deviceId || selectedDevice;
+      if([...micSelect.options].some(o=>o.value===active))micSelect.value=active;
+    }catch{micStatus.textContent='Microphone list unavailable. Start voice to request access.';}
+  }
+  function inputState({state,level=0,packets=0}){
+    meter.value=level;
+    micStatus.textContent={waiting:'Waiting for microphone audio…',hearing:'Sound detected',ready:'Microphone connected — speak now',silent:'Input is very quiet — check your microphone',suspended:'Audio paused — press Resume audio'}[state] || '';
+    $('#microphone-help').hidden=!['silent','suspended'].includes(state);
+    $('#microphone-resume').hidden=state!=='suspended';
+    if(packets>0&&!$('#microphone-delivery').textContent)$('#microphone-delivery').textContent='Microphone audio is being sent. Your words will appear below when Gemini recognises speech.';
+  }
+  function transcript(speaker,text,finished,receivedAudio=false){
+    if(receivedAudio&&session?.stream)$('#microphone-delivery').textContent='Gemini received your speech.';
     let row=unfinished[speaker];
     if(!row){row=document.createElement('div');row.className=`live-line from-${speaker}`;const label=document.createElement('strong');label.textContent=speaker==='you'?'You':'Recast';const content=document.createElement('p');row.append(label,content);transcripts.append(row);unfinished[speaker]=row;}
     row.querySelector('p').textContent=text;row.dataset.finished=String(finished);
@@ -40,20 +61,26 @@ export function initAssistant({request,execute,getContext}){
   }
   function stop(){++generation;session?.pause();session=null;running=false;setPhase('idle');status.textContent='Conversation ended. Microphone is off.';}
   async function startVoice({microphone=true,initialText}={}){
-    stop();status.textContent='';
+    stop();status.textContent='';$('#microphone-delivery').textContent='';$('#microphone-help').hidden=true;
     session=new RecastLiveSession({
       getSession:signal=>request('/api/live-session',{method:'POST',signal,body:JSON.stringify({consent:true,language:getLanguage()})}),
-      getContext,onAction:action,onPhase:setPhase,onTranscript:transcript,
+      getContext,onAction:action,onPhase:setPhase,onTranscript:(speaker,text,finished)=>transcript(speaker,text,finished,speaker==='you'),onInput:inputState,onMicrophone:loadMicrophones,
       onError:message=>{status.textContent=message;setPhase('error');}
     });
     session.muted=!$('#voice-read').checked;
-    await session.start({microphone,initialText});setPhase(phase);
+    await session.start({microphone,initialText,deviceId:selectedDevice});setPhase(phase);
   }
-  function open(){if(!dialog.open)dialog.showModal();setPhase(phase);}
+  function open(){if(!dialog.open)dialog.showModal();setPhase(phase);loadMicrophones();}
   function minimise(){if(!dialog.open)return;minimising=true;dialog.close();setPhase(phase);}
   $('#assistant-open').addEventListener('click',open);
   $('#voice-mic').addEventListener('click',()=>session?.active&&(session.stream||['starting','permission','connecting'].includes(phase))?stop():startVoice());
   $('#voice-preview').addEventListener('click',()=>startVoice({microphone:false,initialText:'Say only: Hi, I am Recast. Tell me which material you have and where it is, and we will find the next step together.'}));
+  $('#microphone-refresh').addEventListener('click',()=>loadMicrophones());
+  micSelect.addEventListener('change',async()=>{
+    selectedDevice=micSelect.value;
+    if(session?.active&&session.stream){try{await session.changeMicrophone(selectedDevice);micStatus.textContent='Microphone changed — speak now';}catch(error){micStatus.textContent=error.message;}}
+  });
+  $('#microphone-resume').addEventListener('click',()=>session?.resumeAudio().catch(()=>{micStatus.textContent='Could not resume audio. End the conversation and start voice again.';}));
   $('#voice-mute').addEventListener('click',()=>{session?.muteInput(!session.inputMuted);setPhase(phase);});
   $('#voice-interrupt').addEventListener('click',()=>{session?.stopSpeaking();if(session?.active)setPhase('listening');});
   $('#voice-read').addEventListener('change',()=>session?.muteOutput(!$('#voice-read').checked));
