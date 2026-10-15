@@ -71,6 +71,7 @@ export function initAssistant({request,execute}){
         const reader=new FileReader();reader.onerror=()=>reject(new Error('Could not read the audio recording.'));
         reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.readAsDataURL(blob);
       });
+      if(token!==generation || !dialog.open)return;
       const result=await request('/api/transcribe',{method:'POST',body:JSON.stringify({data,mimeType:audioType(blob.type)})});
       if(token!==generation || !dialog.open)return;
       if(!result.transcript?.trim()){message(t('voiceNoSpeech'));return;}
@@ -87,7 +88,7 @@ export function initAssistant({request,execute}){
     permission=true;updateControls();status.textContent=t('voicePermission');
     recognition.onstart=()=>{if(token!==generation){recognition.abort();return;}permission=false;listening=true;updateControls();status.textContent=t('listening');};
     recognition.onresult=event=>{finalText=Array.from(event.results).filter(item=>item.isFinal).map(item=>item[0].transcript).join(' ');input.value=Array.from(event.results).map(item=>item[0].transcript).join(' ');};
-    recognition.onerror=event=>{failed=true;message(microphoneError(event));};
+    recognition.onerror=event=>{failed=true;if(token===generation && dialog.open && event.error!=='aborted')message(microphoneError(event));};
     recognition.onend=()=>{if(token!==generation)return;permission=false;listening=false;updateControls();if(finalText&&!failed&&dialog.open)run(finalText);else if(!failed)message(t('voiceNoSpeech'));};
     try{recognition.start();}catch(error){permission=false;updateControls();message(microphoneError(error));}
   }
