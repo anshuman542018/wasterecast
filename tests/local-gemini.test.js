@@ -60,3 +60,18 @@ test('local quota cap and provider errors do not disclose secrets',async t=>{
   assert.doesNotMatch(await response.text(),/test-private-key/);
   assert.equal((await call({kind:'explain',content:['second fixture']})).status,429);
 });
+test('audio uses the private transcription schema and is rejected for unrelated operations',async t=>{
+  let calls=0;
+  const call=await fixture(t,{fetchImpl:async(url,options)=>{
+    calls++;
+    const body=JSON.parse(options.body);
+    assert.equal(options.headers['x-goog-api-key'],'test-private-key');
+    assert.deepEqual(body.generationConfig.responseSchema.required,['transcript']);
+    assert.equal(body.contents[0].parts[1].inlineData.mimeType,'audio/webm');
+    return result('{"transcript":"show more leads"}');
+  }});
+  const content=['Transcribe the recording',{inlineData:{mimeType:'audio/webm',data:'AA=='}}];
+  assert.equal((await call({kind:'profile',content})).status,400);
+  const response=await call({kind:'transcribe',content});
+  assert.equal(response.status,200);assert.match(await response.text(),/show more leads/);assert.equal(calls,1);
+});

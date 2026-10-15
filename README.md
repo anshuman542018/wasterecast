@@ -96,3 +96,11 @@ The public `/api/catalog/refresh` endpoint requires `X-Catalog-Refresh-Token`; k
 This is a production-shaped **screening prototype**, not an operating waste marketplace. Real transactions need facility onboarding, current authorization evidence, accepted material specifications, lab results, live capacity, binding price and transport quotes, location-specific movement rules, identity and access controls, and professional compliance review. Public PDF directories do not expose all of those fields or a guaranteed real-time API. The data model treats absent information as unknown rather than filling it in with AI.
 
 The PDF import is checked into `data/catalog.json` for a deterministic demo. A refresh records each source's retrieval time and SHA-256. Extracted names and capacities should be manually audited against the corresponding source pages before any external use.
+
+### Voice recording fix
+
+The primary Record voice action now uses getUserMedia and MediaRecorder rather than requiring browser SpeechRecognition. Press Record, grant microphone permission, speak, and press Stop. A maximum 30-second / 4 MB in-memory clip is sent through Firebase AI Logic to Gemini for a transcription, then through the bounded assistant action path. The app does not save audio to browser storage or application storage; Google service data/logging terms still apply. Closing the assistant discards pending or captured audio and stops tracks. A browser-recognition alternative remains available when supported.
+
+Spoken replies default on. Automatic voice selection prefers named feminine voices in the selected language, with rate 0.9, pitch 1.04 and volume 0.85. Actual voices come from the device/browser and are selectable with Preview voice. The tested browser supplied Microsoft Heera (English India). This is device speech synthesis, not a paid Google TTS service. Microphone permission remains a user/browser requirement. The Google-hosted audio endpoint passed a generated English speech-clip test; physical live microphone capture still requires that permission.
+
+Diagnostic: `python scripts/check_gemini.py --audio path/to/test.wav --lite` checks audio with a temporary development credential that is revoked in finally. Use a WAV under 4 MB. Never include private recordings without permission.

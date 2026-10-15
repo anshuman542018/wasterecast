@@ -2,9 +2,10 @@
 import {generateWithFirebase} from '../spark/gemini.js';
 import {profileSchema, shortlistSchema} from '../spark/gemini-schema.js';
 import {assistantSchema} from '../spark/assistant-core.js';
+import {transcriptionSchema,AUDIO_TYPES} from '../spark/voice.js';
 
 const MAX_BODY = 14_000_000;
-const kinds = {profile:profileSchema, shortlist:shortlistSchema, explain:null,assistant:assistantSchema};
+const kinds = {profile:profileSchema, shortlist:shortlistSchema, explain:null,assistant:assistantSchema,transcribe:transcriptionSchema};
 export function localGeminiMiddleware({apiKey, fetchImpl = fetch, maxRequests = 20, port = 5173}) {
   let requests = 0;
   let resetAt = Date.now() + 3600000;
@@ -43,13 +44,13 @@ export function localGeminiMiddleware({apiKey, fetchImpl = fetch, maxRequests = 
       if (!Object.hasOwn(kinds,kind) || !Array.isArray(content) || content.length < 1 || content.length > 3 ||
         !content.every(part=>typeof part === 'string' ? part.length <= 100000 :
           part && Object.keys(part).length === 1 && part.inlineData &&
-          ['application/pdf','image/png','image/jpeg','image/webp'].includes(part.inlineData.mimeType) &&
+          (['application/pdf','image/png','image/jpeg','image/webp'].includes(part.inlineData.mimeType)||(kind==='transcribe'&&AUDIO_TYPES.includes(part.inlineData.mimeType))) &&
           typeof part.inlineData.data === 'string' && /^[A-Za-z0-9+/]*={0,2}$/.test(part.inlineData.data))) {
         return reply(res,400,{error:'Invalid Gemini input or unsupported document type.'});
       }
       requests++;
       const text = await generateWithFirebase({projectId:'local-developer-key',model:'gemini-3.5-flash',content,
-        schema:kinds[kind],thinkingLevel:kind === 'profile' ? 'minimal' : 'low',
+        schema:kinds[kind],thinkingLevel:['profile','assistant','transcribe'].includes(kind) ? 'minimal' : 'low',
         transport:(model,body)=>fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,{
           method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':apiKey},body:JSON.stringify(body)
         })});

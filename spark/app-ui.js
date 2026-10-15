@@ -1,7 +1,7 @@
 import {MATERIAL_FAMILIES, classifyMaterial, possiblePathways} from './materials.js';
 import {t,initPreferences,applyLanguage,setTheme,getLanguage,familyName} from './preferences.js';
 import {publicContacts,safeWebUrl,workspaceKey,VERIFICATION_ITEMS,verificationProgress,enquiryText} from './lead-tools.js';
-import {initAssistant} from './assistant.js';
+import {initAssistant} from './assistant-controller.js';
 const $ = (selector) => document.querySelector(selector);
 const state = { profile: null, result: null, facilities: [], visibleLeads:5 };
 let saved=[];
