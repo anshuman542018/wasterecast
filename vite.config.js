@@ -2,6 +2,7 @@ import {defineConfig} from 'vite';
 import {existsSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {localGeminiMiddleware} from './server/local-gemini.js';
+import {liveTokenHandler} from './server/live-token.js';
 
 export default defineConfig(({command}) => {
   const envFile = fileURLToPath(new URL('./.env',import.meta.url));
@@ -13,6 +14,8 @@ export default defineConfig(({command}) => {
       fs:{deny:['**/.env','**/.env.*','**/*.{crt,pem}','**/.git/**']}},
     plugins:[{name:'private-local-gemini',apply:'serve',configureServer(server) {
       server.middlewares.use(localGeminiMiddleware({apiKey,port:server.config.server.port}));
+      const live=liveTokenHandler({apiKey,local:true});
+      server.middlewares.use((req,res,next)=>req.url==='/private-api/live-session'?live(req,res):next());
     }}]
   };
 });

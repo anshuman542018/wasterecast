@@ -97,10 +97,30 @@ This is a production-shaped **screening prototype**, not an operating waste mark
 
 The PDF import is checked into `data/catalog.json` for a deterministic demo. A refresh records each source's retrieval time and SHA-256. Extracted names and capacities should be manually audited against the corresponding source pages before any external use.
 
-### Voice recording fix
+### Previous voice recording approach (replaced by Live voice)
 
 The primary Record voice action now uses getUserMedia and MediaRecorder rather than requiring browser SpeechRecognition. Press Record, grant microphone permission, speak, and press Stop. A maximum 30-second / 4 MB in-memory clip is sent through Firebase AI Logic to Gemini for a transcription, then through the bounded assistant action path. The app does not save audio to browser storage or application storage; Google service data/logging terms still apply. Closing the assistant discards pending or captured audio and stops tracks. A browser-recognition alternative remains available when supported.
 
 Spoken replies default on. Automatic voice selection prefers named feminine voices in the selected language, with rate 0.9, pitch 1.04 and volume 0.85. Actual voices come from the device/browser and are selectable with Preview voice. The tested browser supplied Microsoft Heera (English India). This is device speech synthesis, not a paid Google TTS service. Microphone permission remains a user/browser requirement. The Google-hosted audio endpoint passed a generated English speech-clip test; physical live microphone capture still requires that permission.
 
 Diagnostic: `python scripts/check_gemini.py --audio path/to/test.wav --lite` checks audio with a temporary development credential that is revoked in finally. Use a WAV under 4 MB. Never include private recordings without permission.
+
+### Recast live assistant, adapted from HealthByYou Lumi
+
+The current public assistant uses Gemini Live native audio with Aoede, the same voice and streaming approach as Lumi. Start voice once, allow microphone access, and speak naturally across turns. An AudioWorklet sends mono PCM16 at 16 kHz; Gemini returns PCM16 at 24 kHz. Automatic speech detection handles turn-taking. The UI includes live transcripts, interruption, microphone mute, spoken reply mute, minimise and End conversation. Preview Aoede voice starts without requesting a microphone; typed follow-ups use that connection. Sessions last up to five minutes. Hiding or leaving the page stops the microphone. Minimise keeps voice active on this page with a visible End control.
+
+Firebase's browser Live SDK currently omits the App Check token from its WebSocket path (firebase/firebase-js-sdk#10018). Production App Check stays enforced. The site stays on Firebase Hosting. A Node function at `https://wasterecast.vercel.app/api/live-session` verifies the Firebase App Check JWT against Google's public JWKS and issues a one-use Gemini token. The Gemini key is a sensitive Production secret in the existing WasteRecast Vercel project. The browser receives only a token with a sixty-second connection window, a five-minute lifetime and locked model, configuration and tools. Tokens are not persisted or logged by the app. No billing account was added; free quotas still apply.
+
+Two bounded Live tools read the actual workspace context and execute validated app commands. Actual profiling, source-backed matching and uncertainty checks remain in the existing app paths. The assistant cannot send enquiries, pay, delete records or certify acceptance. Routine local interface commands also work without a model session. Audio goes to Google's Gemini service under its free-tier terms during the explicit session; the app does not store recordings. Transcripts stay in page memory.
+
+Security controls include exact CORS origins, explicit consent, signed app attestation, fixed tool definitions, short tokens, and best-effort limits of six sessions per IP per hour and thirty per server instance per hour. These in-memory counters are not distributed production quota guarantees. Google's free quota is the account ceiling. A larger public or paid rollout needs authentication and shared durable limits. Do not enable paid billing without revisiting usage controls.
+
+The function is in `api/live-session.js`; attestation and token creation are in `server/live-token.js`. Development uses the ignored root `.env` through private Vite middleware. Never put the key in a `VITE_` variable. `.vercelignore` excludes local secrets, tools, unrelated projects and outputs from uploads.
+
+Verification commands:
+
+- `npm test`: microphone cancellation, stale permissions, duplicate/cancelled tools, signed-attestation requirement, consent, short locked tokens, CORS, rate limits, secret redaction and existing screening checks.
+- `node --env-file=.env scripts/check_live_voice.mjs`: real Gemini one-use session, audio output and a diagnostic tool call. Add `--audio path/to/short-mono-pcm16.wav` for streamed generated speech input. This is not a physical microphone test.
+- `python scripts/check_gemini.py --live-token`: deployed token endpoint, real Live audio and tool output, using a temporary App Check development credential revoked in finally. Production enforcement is unchanged.
+
+Physical microphone capture needs browser permission and an available input device. Keep that verification separate from generated speech and typed-to-audio tests.

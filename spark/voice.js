@@ -13,7 +13,7 @@ export function preferredVoice(voices,language,preferredURI=''){
 }
 export function microphoneError(error){
   const key=error?.name || error?.error;
-  if(['NotAllowedError','PermissionDeniedError','not-allowed'].includes(key))return 'Microphone permission is blocked. Open this site’s permissions, allow Microphone, then press Record again.';
+  if(['NotAllowedError','PermissionDeniedError','not-allowed'].includes(key))return 'Microphone permission is blocked. Open this site’s permissions, allow Microphone, then start voice again.';
   if(['NotFoundError','DevicesNotFoundError','audio-capture'].includes(key))return 'No microphone was found. Connect one or choose another input in your browser settings.';
   if(['NotReadableError','TrackStartError'].includes(key))return 'The microphone is busy or unavailable. Close other recording apps and try again.';
   if(key==='no-speech')return 'No speech was heard. Press Record, say your material and city, then press Stop.';

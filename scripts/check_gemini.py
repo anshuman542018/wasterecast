@@ -40,6 +40,14 @@ def main():
         headers = {"x-goog-api-key": api_key, "X-Firebase-AppCheck": exchanged.json()["token"],
                    "X-Firebase-Appid": APP.split('/apps/')[1],
                    "Origin": "https://wasterecast.web.app", "Referer": "https://wasterecast.web.app/"}
+        if '--live-token' in sys.argv:
+            response=requests.post('https://wasterecast.vercel.app/api/live-session',headers={'Origin':headers['Origin'],'X-Firebase-AppCheck':headers['X-Firebase-AppCheck']},json={'consent':True,'language':'en'},timeout=30)
+            data=response.json()
+            print(json.dumps({'stage':'public_token_server','status':response.status_code,'cors_origin':response.headers.get('Access-Control-Allow-Origin'),'token_present':bool(data.get('token')),'error':data.get('error')}))
+            if not response.ok:
+                raise RuntimeError('Public live token check failed')
+            subprocess.run(['node','scripts/check_public_live.mjs'],input=json.dumps(data),text=True,cwd=ROOT,check=True)
+            return
         body = {"contents": [{"role": "user", "parts": [{"text": "Respond with OK."}]}]}
         if '--profile' in sys.argv:
             schema = json.loads(subprocess.check_output(['node', '--input-type=module', '-e',

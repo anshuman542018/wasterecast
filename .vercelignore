@@ -1,0 +1,17 @@
+.env
+.env.*
+.tools/
+.venv/
+.git/
+node_modules/
+dist/
+output/
+projects/
+tmp/
+data/cache/
+backend/
+frontend/
+*.png
+*.pdf
+*.zip
+__pycache__/

@@ -1,113 +1,79 @@
 import {localAssistantCommand,validateAssistantCommand} from './assistant-core.js';
-import {t,getLanguage,languages} from './preferences.js';
-import {MicrophoneRecorder,preferredVoice,microphoneError,AUDIO_TYPES,audioType} from './voice.js';
+import {getLanguage} from './preferences.js';
+import {RecastLiveSession} from './live-session.js';
 
-export function initAssistant({request,execute}){
-  const $=selector=>document.querySelector(selector);
-  const dialog=$('#assistant-dialog'),input=$('#assistant-input'),status=$('#assistant-status');
-  const mic=$('#voice-mic'),send=$('#assistant-send'),voiceSelect=$('#voice-select'),voiceStatus=$('#voice-status');
-  const synth=window.speechSynthesis;
-  const Recognition=window.SpeechRecognition || window.webkitSpeechRecognition;
-  const canRecord=Boolean(navigator.mediaDevices?.getUserMedia && window.MediaRecorder);
-  let recognition=null,recorder=null,listening=false,running=false,transcribing=false,permission=false;
-  let generation=0,clock=null,startedAt=0,voices=[];
-  let preferredURI='';
-  try{preferredURI=localStorage.getItem('wr-voice') || '';$('#voice-read').checked=localStorage.getItem('wr-voice-read')!=='off';}catch{$('#voice-read').checked=true;}
-  function updateControls(){
-    const busy=running||transcribing;
-    send.disabled=busy||permission||listening;
-    mic.disabled=busy||permission;
-    mic.textContent=t(listening?'stop':'mic');mic.setAttribute('aria-pressed',String(listening));
-    $('#voice-browser').disabled=busy||permission||listening||!Recognition;
-    $('#voice-preview').disabled=!synth || voices.length===0;
+export function initAssistant({request,execute,getContext}){
+  const $=selector=>document.querySelector(selector),dialog=$('#assistant-dialog');
+  const status=$('#assistant-status'),input=$('#assistant-input'),transcripts=$('#live-transcript');
+  let session=null,phase='idle',running=false,minimising=false,generation=0;
+  const unfinished={};
+  const labels={idle:'Ready when you are',starting:'Starting audio…',permission:'Allow microphone access in your browser',connecting:'Connecting to Gemini Live…',listening:'Listening — speak naturally',thinking:'Working in your workspace…',speaking:'Recast is speaking',error:'Connection needs attention'};
+  function setPhase(value){
+    phase=value;dialog.dataset.phase=value;$('#live-phase').textContent=value==='listening'&&!session?.stream?'Type to continue — microphone off':labels[value] || value;
+    const active=Boolean(session?.active),starting=['starting','permission','connecting'].includes(value);
+    $('#voice-mic').textContent=active&&(session?.stream||starting)?'End conversation':'Start voice';$('#voice-mic').setAttribute('aria-pressed',String(active));
+    $('#voice-mic').disabled=false;$('#assistant-send').disabled=running||starting;
+    $('#voice-mute').disabled=!active||!session?.stream;
+    $('#voice-mute').textContent=session?.inputMuted?'Resume microphone':'Mute microphone';
+    $('#voice-mute').setAttribute('aria-pressed',String(Boolean(session?.inputMuted)));
+    $('#voice-preview').disabled=active;
+    $('#assistant-open').classList.toggle('is-live',active);
+    $('#assistant-open').setAttribute('aria-label',active?'Open assistant — live voice session active':'Open recovery assistant');
+    $('#voice-dock').hidden=!active||dialog.open;
+    $('#voice-dock-status').textContent=$('#live-phase').textContent;
   }
-  function loadVoices(){
-    voices=synth?.getVoices() || [];
-    voiceSelect.replaceChildren(new Option(t('voiceAuto'),''));
-    for(const voice of voices)voiceSelect.add(new Option(`${voice.name} (${voice.lang})`,voice.voiceURI));
-    if(preferredURI && voices.some(voice=>voice.voiceURI===preferredURI))voiceSelect.value=preferredURI;
-    const selected=preferredVoice(voices,languages[getLanguage()].speech,voiceSelect.value);
-    voiceStatus.textContent=selected?`${t('voiceSelected')}: ${selected.name} · ${selected.lang}`:t('voiceMissing');
-    updateControls();
+  function transcript(speaker,text,finished){
+    let row=unfinished[speaker];
+    if(!row){row=document.createElement('div');row.className=`live-line from-${speaker}`;const label=document.createElement('strong');label.textContent=speaker==='you'?'You':'Recast';const content=document.createElement('p');row.append(label,content);transcripts.append(row);unfinished[speaker]=row;}
+    row.querySelector('p').textContent=text;row.dataset.finished=String(finished);
+    if(finished)delete unfinished[speaker];
+    while(transcripts.children.length>40)transcripts.firstElementChild.remove();
+    $('#live-empty').hidden=true;transcripts.scrollTop=transcripts.scrollHeight;
   }
-  function speak(text,preview=false){
-    if((!$('#voice-read').checked && !preview)||!synth)return;
-    synth.cancel();synth.resume?.();
-    const voice=preferredVoice(synth.getVoices(),languages[getLanguage()].speech,voiceSelect.value);
-    if(!voice){voiceStatus.textContent=t('voiceMissing');return;}
-    const utterance=new SpeechSynthesisUtterance(text.slice(0,5000));
-    utterance.voice=voice;utterance.lang=voice.lang;utterance.rate=0.9;utterance.pitch=1.04;utterance.volume=0.85;
-    utterance.onerror=event=>{if(!['canceled','interrupted'].includes(event.error))voiceStatus.textContent=`${t('voicePlaybackError')} (${event.error})`;};
-    synth.speak(utterance);
-  }
-  function message(text){status.textContent=text;speak(text);}
-  async function run(text){
-    if(running||!text.trim()||!dialog.open)return;
-    running=true;updateControls();status.textContent=t('waiting');
-    const token=generation;
+  async function action(raw){
     try{
-      const parsed=localAssistantCommand(text) || (await request('/api/assistant',{method:'POST',body:JSON.stringify({text})})).command;
-      const command=validateAssistantCommand(parsed);
-      if(!dialog.open||token!==generation)return;
-      $('#assistant-plan').textContent=[command.description,command.city,command.state,command.country,command.quantity!=null?command.quantity+' tonnes/month':null].filter(Boolean).join(' · ');
-      const answer=await execute(command);
-      if(token===generation)message(answer || t('voiceHelp'));
-    }catch(error){if(token===generation)message(error.message);}
-    finally{if(token===generation){running=false;updateControls();}}
+      const command=validateAssistantCommand(raw);
+      $('#assistant-plan').textContent=[command.action.replaceAll('_',' '),command.description,command.city,command.country].filter(Boolean).join(' · ');
+      status.textContent='';
+      const result=await execute(command);return result || 'Completed.';
+    }catch(error){status.textContent=error.message;throw error;}
   }
-  function recordingState(state){
-    permission=state==='permission';listening=state==='recording';clearInterval(clock);
-    if(permission)status.textContent=t('voicePermission');
-    if(listening){startedAt=Date.now();const tick=()=>{status.textContent=`${t('voiceRecording')} · ${Math.floor((Date.now()-startedAt)/1000)}s / 30s`;};tick();clock=setInterval(tick,1000);}
-    updateControls();
+  function stop(){++generation;session?.pause();session=null;running=false;setPhase('idle');status.textContent='Conversation ended. Microphone is off.';}
+  async function startVoice({microphone=true,initialText}={}){
+    stop();status.textContent='';
+    session=new RecastLiveSession({
+      getSession:signal=>request('/api/live-session',{method:'POST',signal,body:JSON.stringify({consent:true,language:getLanguage()})}),
+      getContext,onAction:action,onPhase:setPhase,onTranscript:transcript,
+      onError:message=>{status.textContent=message;setPhase('error');}
+    });
+    session.muted=!$('#voice-read').checked;
+    await session.start({microphone,initialText});setPhase(phase);
   }
-  async function transcribe(blob){
-    if(!dialog.open)return;
-    const token=generation;
-    if(!AUDIO_TYPES.includes(audioType(blob.type))){message(t('voiceFormat'));return;}
-    transcribing=true;updateControls();status.textContent=t('voiceTranscribing');
+  function open(){if(!dialog.open)dialog.showModal();setPhase(phase);}
+  function minimise(){if(!dialog.open)return;minimising=true;dialog.close();setPhase(phase);}
+  $('#assistant-open').addEventListener('click',open);
+  $('#voice-mic').addEventListener('click',()=>session?.active&&(session.stream||['starting','permission','connecting'].includes(phase))?stop():startVoice());
+  $('#voice-preview').addEventListener('click',()=>startVoice({microphone:false,initialText:'Say only: Hi, I am Recast. Tell me which material you have and where it is, and we will find the next step together.'}));
+  $('#voice-mute').addEventListener('click',()=>{session?.muteInput(!session.inputMuted);setPhase(phase);});
+  $('#voice-interrupt').addEventListener('click',()=>{session?.stopSpeaking();if(session?.active)setPhase('listening');});
+  $('#voice-read').addEventListener('change',()=>session?.muteOutput(!$('#voice-read').checked));
+  $('#voice-minimise').addEventListener('click',minimise);
+  $('#voice-dock-open').addEventListener('click',open);$('#voice-dock-stop').addEventListener('click',stop);
+  document.addEventListener('wr-assistant-minimise',minimise);
+  $('#assistant-form').addEventListener('submit',async event=>{
+    event.preventDefault();const text=input.value.trim();if(!text||running)return;input.value='';
+    if(session?.active){transcript('you',text,true);session.sendText(text);return;}
+    const token=generation;running=true;setPhase('thinking');transcript('you',text,true);status.textContent='';
     try{
-      const data=await new Promise((resolve,reject)=>{
-        const reader=new FileReader();reader.onerror=()=>reject(new Error('Could not read the audio recording.'));
-        reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.readAsDataURL(blob);
-      });
-      if(token!==generation || !dialog.open)return;
-      const result=await request('/api/transcribe',{method:'POST',body:JSON.stringify({data,mimeType:audioType(blob.type)})});
-      if(token!==generation || !dialog.open)return;
-      if(!result.transcript?.trim()){message(t('voiceNoSpeech'));return;}
-      input.value=result.transcript;await run(result.transcript);
-    }catch(error){if(token===generation)message(`${t('voiceTranscribeError')} ${error.message}`);}
-    finally{if(token===generation){transcribing=false;updateControls();}}
-  }
-  if(canRecord)recorder=new MicrophoneRecorder({mediaDevices:navigator.mediaDevices,Recorder:window.MediaRecorder,onAudio:transcribe,
-    onError:error=>message(microphoneError(error)),onState:recordingState});
-  function startBrowserRecognition(){
-    if(!Recognition){message(t('voiceUnavailable'));return;}
-    synth?.cancel();const token=generation;let finalText='',failed=false;
-    recognition=new Recognition();recognition.lang=languages[getLanguage()].speech;recognition.continuous=false;recognition.interimResults=true;
-    permission=true;updateControls();status.textContent=t('voicePermission');
-    recognition.onstart=()=>{if(token!==generation){recognition.abort();return;}permission=false;listening=true;updateControls();status.textContent=t('listening');};
-    recognition.onresult=event=>{finalText=Array.from(event.results).filter(item=>item.isFinal).map(item=>item[0].transcript).join(' ');input.value=Array.from(event.results).map(item=>item[0].transcript).join(' ');};
-    recognition.onerror=event=>{failed=true;if(token===generation && dialog.open && event.error!=='aborted')message(microphoneError(event));};
-    recognition.onend=()=>{if(token!==generation)return;permission=false;listening=false;updateControls();if(finalText&&!failed&&dialog.open)run(finalText);else if(!failed)message(t('voiceNoSpeech'));};
-    try{recognition.start();}catch(error){permission=false;updateControls();message(microphoneError(error));}
-  }
-  $('#assistant-open').addEventListener('click',()=>{
-    dialog.showModal();loadVoices();status.textContent=canRecord?t('voiceReady'):Recognition?t('voiceBrowserReady'):t('voiceUnavailable');
-    if(!canRecord&&!Recognition)input.focus();
+      const local=localAssistantCommand(text);
+      if(local){const result=await action(local);if(token===generation){transcript('recast',result,true);status.textContent='';}}
+      else {running=false;await startVoice({microphone:false,initialText:text});}
+    }catch(error){if(token===generation)status.textContent=error.message;}
+    finally{if(token===generation){running=false;if(!session?.active)setPhase('idle');}}
   });
-  $('#assistant-form').addEventListener('submit',event=>{event.preventDefault();if(listening||permission)return;synth?.cancel();run(input.value);});
-  mic.addEventListener('click',()=>{
-    if(running||transcribing||permission)return;
-    if(listening){recorder?.active?recorder.stop():recognition?.stop();return;}
-    synth?.cancel();if(recorder)recorder.start();else startBrowserRecognition();
-  });
-  $('#voice-browser').addEventListener('click',startBrowserRecognition);
-  $('#voice-preview').addEventListener('click',()=>speak(t('voiceGreeting'),true));
-  voiceSelect.addEventListener('change',()=>{preferredURI=voiceSelect.value;try{localStorage.setItem('wr-voice',preferredURI);}catch{}loadVoices();speak(t('voiceGreeting'),true);});
-  $('#voice-read').addEventListener('change',()=>{try{localStorage.setItem('wr-voice-read',$('#voice-read').checked?'on':'off');}catch{}if(!$('#voice-read').checked)synth?.cancel();});
-  synth?.addEventListener('voiceschanged',loadVoices);
-  document.addEventListener('wr-language',()=>{loadVoices();updateControls();});
-  dialog.addEventListener('close',()=>{++generation;clearInterval(clock);recorder?.cancel();recognition?.abort();synth?.cancel();listening=false;permission=false;running=false;transcribing=false;updateControls();});
-  loadVoices();
+  dialog.addEventListener('close',()=>{if(!minimising)stop();minimising=false;});
+  window.addEventListener('pagehide',stop);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&session?.active)stop();});
+  document.addEventListener('wr-language',()=>{if(session?.active)session.sendText('Please continue in '+getLanguage()+'.');});
+  setPhase('idle');
 }

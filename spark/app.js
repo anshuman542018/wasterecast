@@ -18,7 +18,7 @@ const bundledCatalog = await fetch('/catalog.json').then(response => {
 });
 const configured = Boolean(firebaseConfig.apiKey && firebaseConfig.appId);
 const localGemini = import.meta.env.DEV && __LOCAL_GEMINI_AVAILABLE__;
-if (localGemini) document.querySelector('.input-note:not(#ai-connection-status)').textContent = 'Gemini uses your saved API key through a private local backend. The key stays on this computer. Google free-tier quotas and data terms apply; only upload files you are authorized to share. The scenario is illustrative.';
+if (localGemini) document.querySelector('.input-note:not(#ai-connection-status)').textContent = 'This development site uses the saved Gemini key through its private local backend. The browser never receives the key. Google free-tier quotas and data terms apply; only upload files you are authorized to share. The scenario is illustrative.';
 let firestore = null;
 let appCheck = null;
 let appCheckRefreshed = false;
@@ -172,6 +172,13 @@ async function request(url, options = {}) {
   if (url.startsWith('/api/chemicals?')) return chemicalLookup(new URLSearchParams(url.split('?')[1]).get('name') || '');
   if (url === '/api/profile') return profileMaterial(options.body);
   const body = JSON.parse(options.body || '{}');
+  if(url==='/api/live-session'){
+    const endpoint=localGemini?'/private-api/live-session':'https://wasterecast.vercel.app/api/live-session';
+    const headers={'Content-Type':'application/json'};
+    if(localGemini)headers['X-WasteRecast-Local']='1';else headers['X-Firebase-AppCheck']=await verifyAppCheck();
+    const response=await fetch(endpoint,{method:'POST',headers,body:JSON.stringify(body),signal:options.signal});
+    const data=await response.json();if(!response.ok)throw new Error(data.error || 'Live voice could not connect.');return data;
+  }
   if(url==='/api/transcribe'){
     const mimeType=audioType(body.mimeType);
     if(!AUDIO_TYPES.includes(mimeType)||typeof body.data!=='string'||body.data.length>5500000||!/^[A-Za-z0-9+/]*={0,2}$/.test(body.data))throw new Error('Unsupported or oversized audio. Record a short request under 30 seconds.');

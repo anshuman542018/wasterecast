@@ -2,6 +2,7 @@ import {MATERIAL_FAMILIES, classifyMaterial, possiblePathways} from './materials
 import {t,initPreferences,applyLanguage,setTheme,getLanguage,familyName} from './preferences.js';
 import {publicContacts,safeWebUrl,workspaceKey,VERIFICATION_ITEMS,verificationProgress,enquiryText} from './lead-tools.js';
 import {initAssistant} from './assistant-controller.js';
+import './live-assistant.css';
 const $ = (selector) => document.querySelector(selector);
 const state = { profile: null, result: null, facilities: [], visibleLeads:5 };
 let saved=[];
@@ -268,7 +269,7 @@ function openPreparation(profile,candidate){
   const record=saved.find(x=>x.key===workspaceKey(profile,candidate.facility));
   $('#lead-dialog-body').innerHTML=`<h3>${escapeHtml(candidate.facility.name)}</h3><p data-i18n="draftNote">${L('draftNote')}</p>${contactMarkup(candidate.facility)}<section class="verification-list"><h3>${L('progress')} · <span id="check-progress">${verificationProgress(record?.checks)}/4</span></h3><p>${L('verifyNote')}</p>${VERIFICATION_ITEMS.map(key=>`<label><input type="checkbox" data-check="${key}" ${record?.checks?.[key]?'checked':''}> ${L(key)}</label>`).join('')}</section><label for="enquiry-draft">${L('prepare')}</label><textarea id="enquiry-draft" rows="10"></textarea><div class="candidate-actions"><button id="copy-enquiry" class="secondary-btn" type="button">${L('copy')}</button><button id="save-enquiry" class="utility-btn" type="button">${L('save')}</button><button id="print-enquiry" class="utility-btn" type="button">${L('print')}</button></div>`;
   $('#enquiry-draft').value=record?.draft || enquiryText(profile,candidate);
-  if($('#assistant-dialog').open)$('#assistant-dialog').close();
+  if($('#assistant-dialog').open)document.dispatchEvent(new Event('wr-assistant-minimise'));
   if(!$('#lead-dialog').open)$('#lead-dialog').showModal();
 }
 function renderSaved(){
@@ -371,7 +372,13 @@ async function start() {
       }
     }catch(error){toast(error.message,true);}
   });
-  initAssistant({request,execute:executeAssistant});
+  initAssistant({request,execute:executeAssistant,getContext:()=>{
+    const filter=$('#results-filter').value;
+    return {brief:{description:$('#description').value,country:$('#origin-country').value,city:$('#origin-city').value,state:$('#origin-state').value,quantity:$('#quantity').value},
+      profile:state.profile,filter,
+      visible_leads:(state.result?.candidates || []).filter(x=>filter==='all'||(filter==='rejected'?x.status==='rejected':x.status!=='rejected')).slice(0,state.visibleLeads).map((x,i)=>({number:i+1,name:x.facility.name,city:x.facility.city_or_district,status:x.status,process:x.facility.process,source:x.facility.source_url,fit_note:x.fit_note,public_contact:x.facility.public_contact})),
+      quote_inputs:Object.fromEntries(['disposal-cost','buyer-quote','transport-quote','pretreatment-quote'].map(id=>[id,$('#'+id).value]))};
+  }});
   const countryNames = window.wasteRecast.countries;
   window.addEventListener('gemini-status',event=>{
     $('#ai-connection-status').classList.remove('hidden');

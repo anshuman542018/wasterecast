@@ -13,8 +13,10 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@google/genai": "^2.30.0",
     "countries-list": "^3.4.1",
-    "firebase": "^13.0.0"
+    "firebase": "^13.0.0",
+    "jose": "^6.2.12"
   },
   "devDependencies": {
     "firebase-tools": "^15.33.0",
