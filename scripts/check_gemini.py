@@ -46,8 +46,14 @@ def main():
                 "import {profileSchema} from './spark/gemini-schema.js'; console.log(JSON.stringify(profileSchema));"],cwd=ROOT,text=True))
             body['contents'][0]['parts'][0]['text'] = 'Extract a waste profile using only this labeled scenario: clean polypropylene injection molding offcuts, 5 tonnes per month, no coating reported. List unknown facts; do not invent composition or buyer acceptance.'
             body['generationConfig'] = {'responseMimeType':'application/json','responseSchema':schema}
+        if '--assistant' in sys.argv:
+            schema = json.loads(subprocess.check_output(['node','--input-type=module','-e',
+                "import {assistantSchema} from './spark/assistant-core.js'; console.log(JSON.stringify(assistantSchema));"],cwd=ROOT,text=True))
+            body['contents'][0]['parts'][0]['text'] = 'Interpret this WasteRecast request as action search. Extract the material description, country ISO code, city, state and quantity explicitly in tonnes/month. Return all schema fields; use null for other fields. Request: Find leads for 5 tonnes per month of polypropylene offcuts in Pune, Maharashtra, India.'
+            body['generationConfig'] = {'responseMimeType':'application/json','responseSchema':schema,'thinkingConfig':{'thinkingLevel':'minimal'}}
+        model = 'gemini-3.5-flash-lite' if '--lite' in sys.argv else 'gemini-3.5-flash'
         response = requests.post(
-            f"https://firebasevertexai.googleapis.com/v1beta/projects/{PROJECT}/models/gemini-3.5-flash:generateContent",
+            f"https://firebasevertexai.googleapis.com/v1beta/projects/{PROJECT}/models/{model}:generateContent",
             headers=headers, json=body, timeout=60)
         data = response.json()
         text = "".join(part.get("text", "") for candidate in data.get("candidates", [])

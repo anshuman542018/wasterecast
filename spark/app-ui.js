@@ -335,6 +335,7 @@ async function executeAssistant(command){
   return t('voiceHelp');
 }
 async function start() {
+  document.querySelectorAll('[data-boot-disabled]').forEach(button=>{button.disabled=false;delete button.dataset.bootDisabled;});
   // Mark the primary controls for translation without changing source text.
   const labels={'#ai-shortlist':'assess','#show-more-leads':'more','.value-panel h3':'costTitle','#cost-empty p:first-child':'costIntro','#recalculate':'calculate','.value-total>span':'annual'};
   for(const [selector,key] of Object.entries(labels))$(selector)?.setAttribute('data-i18n',key);
@@ -403,6 +404,7 @@ async function start() {
     $('#origin-city').value = 'Pune'; $('#origin-state').value = 'Maharashtra'; $('#quantity').value = '12';
     toast('Scenario loaded. These inputs describe no real factory.');
   });
+  document.body.setAttribute('aria-busy','false');
   try {
     const [health, catalog] = await Promise.all([request('/api/health'), request('/api/catalog?limit=1')]);
     $('#facility-count').textContent = catalog.total.toLocaleString('en-IN');
