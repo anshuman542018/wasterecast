@@ -1,5 +1,18 @@
 # WasteRecast — Industrial Waste-to-Value Screening
 
+## AI Builder Cup submission / Clorex
+
+The completed prescribed pitch template (PPTX and PDF), three-minute video link,
+brief description, transcript and verification checklist are in
+[submission/](submission/README.md). The public prototype remains
+[wasterecast.web.app](https://wasterecast.web.app/).
+
+Validation on 17 October 2026: 39 automated tests passed; Firebase AI Logic
+profiling returned a real structured result; the deployed Gemini Live token
+service passed an audio/tool smoke test. The participant confirmed public
+profiling works in Chrome/Edge. Codex's connected in-app browser could not fetch
+the public AI endpoint; that limitation is recorded separately in the checklist.
+
 A source-attributed working prototype for the AI Builder Cup 2026 **Sustainability & Social Impact** theme. The app profiles waste and surplus materials from 16 families, including solids, liquids, organics, electronics, and construction waste. It screens public recycler records and prepares a preliminary facility dossier.
 
 ## What is real, and what is unknown

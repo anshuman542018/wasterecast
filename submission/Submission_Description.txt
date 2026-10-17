@@ -1,0 +1,9 @@
+WasteRecast, built by Clorex, is an AI-assisted waste recovery discovery prototype for the Sustainability & Social Impact theme. It helps businesses turn a waste description or optional document into a structured material profile, source-linked recovery leads and an acceptance enquiry.
+
+Gemini extracts stated material facts and missing specifications, reviews candidate evidence and powers Recast's conversational app actions. Firebase Hosting serves the public application; Cloud Firestore stores 912 source-attributed India catalog records in 23 read-only chunks. Firebase AI Logic connects public profiling and fit review to the Gemini Developer API with App Check. Recast Live uses a private Vercel service to issue short-lived Gemini tokens, keeping the API key off the client. Cloud Run is not used in this release: Firebase is our selected deployment option.
+
+The interface supports 16 material families, worldwide open-map discovery, four language options, optional documents, light/dark themes, public contacts where published, saved leads and quote-based economics. Facility listings remain unverified until composition, current authorization, acceptance/capacity and written commercial terms are confirmed. The demo uses an explicitly labelled illustrative waste scenario with real public records.
+
+Prototype: https://wasterecast.web.app/
+Source: https://github.com/anshuman542018/wasterecast
+Video: https://drive.google.com/file/d/1e1EyM-4qKs6WXAbR9nq35Z9UsCGghN5u/view

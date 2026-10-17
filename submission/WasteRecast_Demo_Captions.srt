@@ -1,0 +1,209 @@
+1
+00:00:00,250 --> 00:00:04,579
+WasteRecast helps a business turn an unclear
+waste description into recovery
+
+2
+00:00:04,579 --> 00:00:08,909
+leads and an acceptance enquiry. Our
+Sustainability and Social Impact prototype
+
+3
+00:00:08,909 --> 00:00:13,238
+focuses on a practical obstacle: knowing which
+facility is worth approaching,
+
+4
+00:00:13,238 --> 00:00:15,600
+and what evidence is still missing.
+
+5
+00:00:16,250 --> 00:00:21,207
+Here we enter an illustrative scenario: five
+tonnes per month of polypropylene
+
+6
+00:00:21,207 --> 00:00:26,164
+offcuts in Pune. The records are real public
+listings; this producer scenario
+
+7
+00:00:26,164 --> 00:00:30,708
+is not real. This recording uses our private
+local Gemini connection.
+
+8
+00:00:30,708 --> 00:00:33,600
+The public website uses Firebase AI Logic.
+
+9
+00:00:34,250 --> 00:00:38,750
+Gemini identifies plastic, extracts the stated
+quantity and location, and
+
+10
+00:00:38,750 --> 00:00:41,900
+lists missing laboratory results and buyer
+quotes.
+
+11
+00:00:41,900 --> 00:00:45,050
+Source and checks exposes the input quotations.
+
+12
+00:00:45,050 --> 00:00:49,550
+The model's confidence is an extraction
+estimate, not measured accuracy
+
+13
+00:00:49,550 --> 00:00:53,600
+or proof that a recycler can accept this
+material.
+
+14
+00:00:54,250 --> 00:00:57,563
+Find recovery leads screens the sourced catalog.
+
+15
+00:00:57,563 --> 00:01:02,769
+We show five leads first, ordered by state and
+district proximity.
+
+16
+00:01:02,769 --> 00:01:07,974
+Asking Gemini to review produces a recovery-
+route hypothesis and the key
+
+17
+00:01:07,974 --> 00:01:12,707
+unanswered question. These are potential leads,
+not confirmed buyers, live
+
+18
+00:01:12,707 --> 00:01:14,600
+prices, or road-distance rankings.
+
+19
+00:01:15,250 --> 00:01:20,234
+For A K Enterprises, the source identifies
+plastic granules and links to
+
+20
+00:01:20,234 --> 00:01:23,141
+page eighty-one of the Maharashtra board
+directory.
+
+21
+00:01:23,141 --> 00:01:27,294
+The app asks for current authorization, exact
+accepted composition, capacity
+
+22
+00:01:27,294 --> 00:01:31,862
+and a written price. Published contact details
+are shown where available;
+
+23
+00:01:31,862 --> 00:01:35,600
+missing phone numbers and email addresses are
+not invented.
+
+24
+00:01:36,250 --> 00:01:40,891
+Prepare enquiry creates a draft containing the
+material, quantity, origin,
+
+25
+00:01:40,891 --> 00:01:44,140
+source link and questions for the facility.
+
+26
+00:01:44,140 --> 00:01:48,782
+Nothing is sent automatically. All four review
+checks start unconfirmed.
+
+27
+00:01:48,782 --> 00:01:56,672
+A user can save the lead, copy the draft, or
+print it as a PDF after reviewing
+
+28
+00:01:56,672 --> 00:01:57,600
+the information.
+
+29
+00:01:58,250 --> 00:02:01,768
+The commercial calculator belongs to the
+selected facility.
+
+30
+00:02:01,768 --> 00:02:06,166
+Without actual buyer and transport quotes, its
+value remains pending.
+
+31
+00:02:06,166 --> 00:02:11,003
+Once supplied, it annualizes the quantity times
+avoided disposal cost plus
+
+32
+00:02:11,003 --> 00:02:14,082
+the buyer quote, minus transport and
+pretreatment.
+
+33
+00:02:14,082 --> 00:02:17,600
+Gemini does not invent revenue or environmental
+savings.
+
+34
+00:02:18,250 --> 00:02:20,789
+Recast also supports natural-language app
+actions.
+
+35
+00:02:20,789 --> 00:02:23,751
+We type, prepare enquiry for lead one.
+
+36
+00:02:23,751 --> 00:02:27,983
+The assistant interprets the request and opens
+the actual enquiry.
+
+37
+00:02:27,983 --> 00:02:33,061
+Live voice uses Gemini and the Aoede voice with
+a selectable microphone.
+
+38
+00:02:33,061 --> 00:02:35,600
+Only validated application tools can run.
+
+39
+00:02:36,250 --> 00:02:40,874
+The interface includes four language options,
+light and dark modes, optional
+
+40
+00:02:40,874 --> 00:02:45,498
+documents and clear next steps. Worldwide
+discovery uses open map records,
+
+41
+00:02:45,498 --> 00:02:47,600
+with material acceptance explicitly unverified.
+
+42
+00:02:48,250 --> 00:02:51,493
+Firebase hosts the app. Firestore serves the
+catalog.
+
+43
+00:02:51,493 --> 00:02:56,357
+Gemini powers understanding and Recast. Our next
+step is a verified buyer
+
+44
+00:02:56,357 --> 00:02:59,600
+pilot. Explore WasteRecast and the public source
+code.
