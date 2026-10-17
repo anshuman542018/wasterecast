@@ -59,6 +59,11 @@ def main():
                 "import {assistantSchema} from './spark/assistant-core.js'; console.log(JSON.stringify(assistantSchema));"],cwd=ROOT,text=True))
             body['contents'][0]['parts'][0]['text'] = 'Interpret this WasteRecast request as action search. Extract the material description, country ISO code, city, state and quantity explicitly in tonnes/month. Return all schema fields; use null for other fields. Request: Find leads for 5 tonnes per month of polypropylene offcuts in Pune, Maharashtra, India.'
             body['generationConfig'] = {'responseMimeType':'application/json','responseSchema':schema,'thinkingConfig':{'thinkingLevel':'minimal'}}
+        if '--exchange' in sys.argv:
+            payload=json.loads(subprocess.check_output(['node','--input-type=module','-e',
+                "import {exchangeSchema,semanticPrompt} from './spark/exchange-core.js'; const q={role:'seller',family:'plastic',country:'DE',description:'Clean polypropylene offcuts, mixed colours.',specifications:'Rigid PP; moisture untested.',hazard:'unknown',tradeScope:'international',quantity:5}; const b={id:'qa-pp',role:'buyer',family:'plastic',country:'NL',description:'Accept PP injection moulding offcuts for black compound.',specifications:'Polypropylene only; PVC excluded; lab tests required.',hazard:'no',tradeScope:'international',quantity:8}; console.log(JSON.stringify({schema:exchangeSchema,prompt:semanticPrompt(q,[b])}));"],cwd=ROOT,text=True))
+            body['contents'][0]['parts'][0]['text']=payload['prompt']
+            body['generationConfig']={'responseMimeType':'application/json','responseSchema':payload['schema'],'thinkingConfig':{'thinkingLevel':'low'}}
         model = 'gemini-3.5-flash-lite' if '--lite' in sys.argv else 'gemini-3.5-flash'
         if '--audio' in sys.argv:
             import base64

@@ -3,9 +3,10 @@ import {generateWithFirebase} from '../spark/gemini.js';
 import {profileSchema, shortlistSchema} from '../spark/gemini-schema.js';
 import {assistantSchema} from '../spark/assistant-core.js';
 import {transcriptionSchema,AUDIO_TYPES} from '../spark/voice.js';
+import {exchangeSchema} from '../spark/exchange-core.js';
 
 const MAX_BODY = 14_000_000;
-const kinds = {profile:profileSchema, shortlist:shortlistSchema, explain:null,assistant:assistantSchema,transcribe:transcriptionSchema};
+const kinds = {profile:profileSchema, shortlist:shortlistSchema, explain:null,assistant:assistantSchema,transcribe:transcriptionSchema,exchange:exchangeSchema};
 export function localGeminiMiddleware({apiKey, fetchImpl = fetch, maxRequests = 20, port = 5173}) {
   let requests = 0;
   let resetAt = Date.now() + 3600000;

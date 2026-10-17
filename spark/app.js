@@ -11,6 +11,7 @@ import {profileSchema,shortlistSchema} from './gemini-schema.js';
 import {assistantSchema,validateAssistantCommand} from './assistant-core.js';
 import {getLanguage,languages} from './preferences.js';
 import {transcriptionSchema,AUDIO_TYPES,audioType} from './voice.js';
+import {exchangeSchema} from './exchange-core.js';
 
 const bundledCatalog = await fetch('/catalog.json').then(response => {
   if (!response.ok) throw new Error('The public facility catalog could not be loaded.');
@@ -20,10 +21,12 @@ const configured = Boolean(firebaseConfig.apiKey && firebaseConfig.appId);
 const localGemini = import.meta.env.DEV && __LOCAL_GEMINI_AVAILABLE__;
 if (localGemini) document.querySelector('.input-note:not(#ai-connection-status)').textContent = 'This development site uses the saved Gemini key through its private local backend. The browser never receives the key. Google free-tier quotas and data terms apply; only upload files you are authorized to share. The scenario is illustrative.';
 let firestore = null;
+let firebaseApp = null;
 let appCheck = null;
 let appCheckRefreshed = false;
 if (configured) {
   const app = initializeApp(firebaseConfig);
+  firebaseApp = app;
   if (recaptchaSiteKey) appCheck = initializeAppCheck(app, {provider:new ReCaptchaEnterpriseProvider(recaptchaSiteKey), isTokenAutoRefreshEnabled:true});
   firestore = getFirestore(app);
 }
@@ -66,7 +69,7 @@ async function generate(content, schema = null, thinkingLevel = 'low') {
   if (localGemini) {
     report('Connecting to Gemini through the private local backend…');
     try {
-      const kind = schema === profileSchema ? 'profile' : schema === shortlistSchema ? 'shortlist' : schema === assistantSchema ? 'assistant' : schema===transcriptionSchema?'transcribe':'explain';
+      const kind = schema === profileSchema ? 'profile' : schema === shortlistSchema ? 'shortlist' : schema === assistantSchema ? 'assistant' : schema===transcriptionSchema?'transcribe':schema===exchangeSchema?'exchange':'explain';
       const response = await fetch('/private-api/gemini',{method:'POST',headers:{'Content-Type':'application/json','X-WasteRecast-Local':'1'},body:JSON.stringify({kind,content})});
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Local Gemini connection failed.');
@@ -200,3 +203,7 @@ async function request(url, options = {}) {
 }
 window.wasteRecast = {request,countries, getCatalogLocation:()=>catalogLocation, getDiscoveryAttribution:()=>discoveryAttribution};
 await import('./app-ui.js');
+if(firebaseApp && firestore){
+  const {initExchange}=await import('./exchange-ui.js');
+  initExchange({app:firebaseApp,db:firestore,generate});
+}

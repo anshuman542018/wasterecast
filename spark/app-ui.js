@@ -58,8 +58,9 @@ function renderProfile(profile,reset=true) {
     <div id="chemical-references" class="evidence-list hidden"><strong>Live PubChem identity references</strong><div id="chemical-reference-list"></div><small>Compound identity does not verify the composition of this waste stream.</small></div>
     <div class="evidence-list"><strong>All missing facts</strong><p>${escapeHtml(profile.missing_facts?.join(' · ') || 'Current permit, accepted chemistry, available capacity, and commercial terms.')}</p></div>
     ${profile.source_mode === 'gemini' ? `<small>Gemini reports ${Math.round(profile.confidence * 100)}% extraction confidence. This is a model estimate, not a verified accuracy or compatibility score.</small>` : ''}</details>
-    <button id="find-matches" class="primary-btn" type="button">${L('find')} <span>↗</span></button>`;
+    <button id="find-matches" class="primary-btn" type="button">${L('find')} <span>↗</span></button><button id="exchange-from-profile" class="quiet-btn" type="button">Find registered buyers worldwide ↗</button>`;
   $('#find-matches').addEventListener('click', runMatches);
+  $('#exchange-from-profile').addEventListener('click',()=>window.dispatchEvent(new CustomEvent('exchange-profile',{detail:profile})));
   if (profile.source_mode === 'gemini' && profile.material_names?.length) loadChemicals(profile.material_names.slice(0,3));
 }
 async function loadChemicals(names) {

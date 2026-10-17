@@ -15,6 +15,15 @@
 - [Demo transcript](Demo_Transcript.md) and [English captions](WasteRecast_Demo_Captions.srt)
 - [Submission and verification checklist](Submission_Checklist.md)
 
+## Live app addition — global registered exchange
+
+The live app now also supports authenticated buyer requests and seller offers,
+Firestore persistence, country filters and Gemini semantic comparison with
+partial-fit discussion briefs. See [the exchange methodology](../EXCHANGE.md).
+The existing pitch deck and video cover the earlier directory workflow; they
+do not show this new exchange. The brief description has been updated to make
+that distinction explicit. No commercial users or transactions are fabricated.
+
 The demo uses actual application captures, an explicitly labelled illustrative
 polypropylene scenario and real public catalog records. It uses synthetic
 narration and the private local Gemini connection. The public site uses Firebase

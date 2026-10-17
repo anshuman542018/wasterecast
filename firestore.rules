@@ -1,6 +1,50 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function verified() { return signedIn() && request.auth.token.email_verified == true; }
+    function shortString(value, max) { return value is string && value.size() <= max; }
+    function nullableNumber(value) { return value == null || (value is number && value >= 0 && value <= 1000000000); }
+    function validListing(d, listingId) {
+      return d.keys().hasAll(['ownerId','slot','role','organization','title','family','country','city','description','specifications','exclusions','hazard','tradeScope','quantity','price','currency','publicContact','contactConsent','status','createdAt','updatedAt','expiresAt'])
+        && d.keys().hasOnly(['ownerId','slot','role','organization','title','family','country','city','description','specifications','exclusions','hazard','tradeScope','quantity','price','currency','publicContact','contactConsent','status','createdAt','updatedAt','expiresAt'])
+        && d.ownerId == request.auth.uid && d.slot is int && d.slot >= 0 && d.slot < 10
+        && listingId == request.auth.uid + '_' + string(d.slot)
+        && d.role in ['buyer','seller'] && d.status in ['published','paused']
+        && shortString(d.organization,100) && d.organization.size() > 0
+        && shortString(d.title,120) && d.title.size() > 0
+        && shortString(d.description,3000) && d.description.size() >= 20
+        && shortString(d.specifications,1500) && shortString(d.exclusions,500)
+        && d.family in ['spent_solvent','used_oil','waste_oil','cooking_oil','plastic','metal','paper','glass','textile','wood','organic','electronic','construction','rubber','battery','other']
+        && d.country is string && d.country.matches('^[A-Z]{2}$')
+        && shortString(d.city,100) && d.city.size() > 0
+        && d.hazard in ['yes','no','unknown'] && d.tradeScope in ['domestic','international']
+        && nullableNumber(d.quantity) && nullableNumber(d.price)
+        && d.currency is string && d.currency.matches('^[A-Z]{3}$')
+        && shortString(d.publicContact,200) && d.publicContact.matches('^[^\\s@<>]+@[^\\s@<>]+\\.[^\\s@<>]+$')
+        && d.contactConsent == true
+        && d.createdAt is timestamp && d.updatedAt == request.time && d.expiresAt is timestamp
+        && d.expiresAt <= request.time + duration.value(30,'d')
+        && (d.status == 'paused' || d.expiresAt > request.time);
+    }
+    match /exchangeMembers/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create, update: if verified() && request.auth.uid == uid
+        && request.resource.data.keys().hasAll(['organization','country','updatedAt'])
+        && request.resource.data.keys().hasOnly(['organization','country','updatedAt'])
+        && shortString(request.resource.data.organization,100)
+        && request.resource.data.country is string && request.resource.data.country.matches('^[A-Z]{2}$')
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if signedIn() && request.auth.uid == uid;
+    }
+    match /exchangeListings/{listingId} {
+      allow get: if (signedIn() && listingId.matches(request.auth.uid + '_[0-9]')) || resource.data.status == 'published';
+      allow list: if request.query.limit <= 41 && (resource.data.status == 'published' || (signedIn() && resource.data.ownerId == request.auth.uid));
+      allow create: if verified() && validListing(request.resource.data,listingId) && request.resource.data.createdAt == request.time;
+      allow update: if verified() && resource.data.ownerId == request.auth.uid
+        && request.resource.data.createdAt == resource.data.createdAt && validListing(request.resource.data,listingId);
+      allow delete: if signedIn() && resource.data.ownerId == request.auth.uid;
+    }
     match /publicCatalog/{catalogId} {
       allow read: if catalogId == 'india-v1';
       allow write: if false;

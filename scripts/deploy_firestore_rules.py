@@ -1,4 +1,4 @@
-"""Deploy a read-only public catalog rule set using the Firebase Rules API."""
+"""Deploy source-catalog and owner-scoped material exchange Firestore rules."""
 import subprocess
 from pathlib import Path
 import requests
@@ -23,6 +23,6 @@ def main():
         check.raise_for_status()
         response=requests.patch(f'https://firebaserules.googleapis.com/v1/{release_name}',headers=headers,json={'release':{'name':release_name,'rulesetName':ruleset},'updateMask':'rulesetName'},timeout=30)
     response.raise_for_status()
-    print('Deployed read-only public catalog rules:',response.json()['rulesetName'])
+    print('Deployed public catalog and owner-scoped exchange rules:',response.json()['rulesetName'])
 
 if __name__=='__main__': main()

@@ -1,5 +1,21 @@
 # WasteRecast — Industrial Waste-to-Value Screening
 
+## Global buyer / seller exchange — 17 October 2026
+
+[Buy / Sell worldwide](https://wasterecast.web.app/#exchange) adds Google/email
+registration, owner-managed Firestore buyer requests and seller offers, country
+filters, Gemini semantic comparison and partial-fit discussion briefs. Published
+listings expire after 30 days; no real businesses or offers are fabricated. See
+[EXCHANGE.md](EXCHANGE.md) for data access, AI methodology, deployment, testing and
+the limits of estimated fit scores. The existing submission video/deck cover the
+earlier directory workflow and do not demonstrate the new exchange.
+
+Exchange verification: **44 automated tests passed**, plus **21 live access
+checks** and **11 Firebase SDK integration checks**. The deployed browser flow
+returned real Gemini semantic results for three labelled scenarios, including
+partial PP fits and an incompatible PET buyer. All temporary QA accounts and
+database records were removed. These checks are not an accuracy or load benchmark.
+
 ## AI Builder Cup submission / Clorex
 
 The completed prescribed pitch template (PPTX and PDF), three-minute video link,
@@ -45,7 +61,7 @@ npm run build
 .\.venv\Scripts\python.exe scripts\deploy_spark.py
 ```
 
-The site is deployed to the separate `wasterecast` Firebase Hosting site in project `parallax-waste-2026-91129`. The Firebase project ID is internal; the product name and public URL are WasteRecast. To reseed the free database or deploy its read-only rules, use `python scripts/seed_firestore.py` and `python scripts/deploy_firestore_rules.py` with an authorized gcloud login. The rules allow reads only for `publicCatalog/india-v1` and its chunks; all client writes and other document paths are denied.
+The site is deployed to the separate `wasterecast` Firebase Hosting site in project `parallax-waste-2026-91129`. The Firebase project ID is internal; the product name and public URL are WasteRecast. To reseed the public catalog or deploy rules, use `python scripts/seed_firestore.py` and `python scripts/deploy_firestore_rules.py` with an authorized gcloud login. The source catalog remains read-only. The global exchange adds schema-validated, email-verified owner writes for listings, and private owner-only member profiles; see [EXCHANGE.md](EXCHANGE.md).
 
 The web app calls the official Firebase AI Logic REST proxy with a domain-restricted reCAPTCHA Enterprise App Check token and the public Firebase app key. Gemini credentials stay managed by Google. The **Gemini Developer API is enabled on Spark**. Gemini 3.5 Flash uses minimal thinking for extraction and low thinking for source assessment; a declared 429/500/503 error permits one attempt with Gemini 3.5 Flash-Lite. Model quota reset information avoids further attempts to an exhausted primary model during that session. The last 12 successful AI responses are cached in memory using input hashes; no input or AI response cache is persisted to browser storage. Network failures and timeouts do not trigger duplicate requests. Live description profiling, uploaded PDF/TXT profiling, individual fit explanations, and shortlist assessments passed on 13 October 2026. Chrome is not connected to the testing tool and has not been separately verified. Manual screening works without AI. App Check remains enforced and no billing account is linked. Documents are sent to Gemini only when “Profile with Gemini” is pressed; the application does not store uploads. Google's free-tier data terms apply. AI monitoring in the project records sampled prompts and outputs in Cloud Logging. Free model quotas remain a limitation for public traffic; reaching all available quotas produces a clear message and keeps manual screening available.
 
