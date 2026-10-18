@@ -1,0 +1,574 @@
+{
+  "scope": "Author-generated scenario benchmark; proposed labels await independent materials-expert review. No real businesses or transactions.",
+  "generatedAt": "2026-10-18T03:23:54.463Z",
+  "expertValidation": "pending",
+  "decisionCases": 24,
+  "correctDecisions": 24,
+  "unsafeFalsePositives": 0,
+  "traceableChecks": 33,
+  "totalChecks": 35,
+  "unexplainedDecisions": 3,
+  "retrieval": [
+    {
+      "id": "alias-pp",
+      "recallAt20": 1,
+      "precisionAt5": 0.2,
+      "top5": [
+        "alias-match",
+        "generic-0",
+        "generic-1",
+        "generic-10",
+        "generic-11"
+      ],
+      "candidateCount": 31
+    },
+    {
+      "id": "process-wood",
+      "recallAt20": 1,
+      "precisionAt5": 0.2,
+      "top5": [
+        "compost-match",
+        "wood-decoy-0",
+        "wood-decoy-1",
+        "wood-decoy-10",
+        "wood-decoy-11"
+      ],
+      "candidateCount": 31
+    }
+  ],
+  "decisions": [
+    {
+      "id": "pp-stated-fit",
+      "name": "Reviewed PP and moisture align",
+      "expected": "stated_fit",
+      "actual": "stated_fit",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "pass",
+          "buyerQuote": "material eq polypropylene",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        },
+        {
+          "attribute": "moisture",
+          "status": "pass",
+          "buyerQuote": "moisture lte 0.5 %",
+          "sellerQuotes": [
+            "moisture eq 0.2 %"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "drying-needed",
+      "name": "Moisture exceeds buyer limit; investigate drying",
+      "expected": "conditional",
+      "actual": "conditional",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "pass",
+          "buyerQuote": "material eq polypropylene",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        },
+        {
+          "attribute": "moisture",
+          "status": "fail",
+          "buyerQuote": "moisture lte 0.5 %",
+          "sellerQuotes": [
+            "moisture eq 2 %"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "polymer-conflict",
+      "name": "PP cannot satisfy PET-only identity",
+      "expected": "blocked",
+      "actual": "blocked",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "fail",
+          "buyerQuote": "material eq PET",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "missing-moisture",
+      "name": "Seller moisture is missing",
+      "expected": "needs_evidence",
+      "actual": "needs_evidence",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "pass",
+          "buyerQuote": "material eq polypropylene",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        },
+        {
+          "attribute": "moisture",
+          "status": "unknown",
+          "buyerQuote": "moisture lte 0.5 %",
+          "sellerQuotes": []
+        }
+      ]
+    },
+    {
+      "id": "ppm-boundary",
+      "name": "5000 ppm equals 0.5 percent",
+      "expected": "stated_fit",
+      "actual": "stated_fit",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "pass",
+          "buyerQuote": "material eq polypropylene",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        },
+        {
+          "attribute": "moisture",
+          "status": "pass",
+          "buyerQuote": "moisture lte 0.5 %",
+          "sellerQuotes": [
+            "moisture eq 5000 ppm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ppm-over-limit",
+      "name": "5001 ppm exceeds 0.5 percent",
+      "expected": "conditional",
+      "actual": "conditional",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "pass",
+          "buyerQuote": "material eq polypropylene",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        },
+        {
+          "attribute": "moisture",
+          "status": "fail",
+          "buyerQuote": "moisture lte 0.5 %",
+          "sellerQuotes": [
+            "moisture eq 5001 ppm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "missing-grade",
+      "name": "Missing required grade stays unknown",
+      "expected": "needs_evidence",
+      "actual": "needs_evidence",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "pass",
+          "buyerQuote": "material eq PP",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        },
+        {
+          "attribute": "grade",
+          "status": "unknown",
+          "buyerQuote": "grade eq food contact",
+          "sellerQuotes": []
+        }
+      ]
+    },
+    {
+      "id": "contradictory-observations",
+      "name": "Contradictory moisture facts cannot hide failure",
+      "expected": "conditional",
+      "actual": "conditional",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "pass",
+          "buyerQuote": "material eq polypropylene",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        },
+        {
+          "attribute": "moisture",
+          "status": "fail",
+          "buyerQuote": "moisture lte 0.5 %",
+          "sellerQuotes": [
+            "moisture eq 0.2 %",
+            "moisture eq 2 %"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unreviewed-extraction",
+      "name": "Unreviewed extraction cannot establish acceptance",
+      "expected": "needs_evidence",
+      "actual": "needs_evidence",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "pass",
+          "buyerQuote": "material eq polypropylene",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        },
+        {
+          "attribute": "moisture",
+          "status": "unknown",
+          "buyerQuote": "moisture lte 0.5 %",
+          "sellerQuotes": [
+            "moisture eq 0.2 %"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "inferred-value",
+      "name": "An inferred measurement stays unknown",
+      "expected": "needs_evidence",
+      "actual": "needs_evidence",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "pass",
+          "buyerQuote": "material eq polypropylene",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        },
+        {
+          "attribute": "moisture",
+          "status": "unknown",
+          "buyerQuote": "moisture lte 0.5 %",
+          "sellerQuotes": [
+            "moisture eq 0.2 %"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "flash-point-fahrenheit",
+      "name": "100 Fahrenheit fails minimum 60 Celsius",
+      "expected": "blocked",
+      "actual": "blocked",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "flash_point",
+          "status": "fail",
+          "buyerQuote": "flash_point gte 60 C",
+          "sellerQuotes": [
+            "flash_point eq 100 F"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "size-reduction",
+      "name": "Oversize plastic warrants a shredding trial",
+      "expected": "conditional",
+      "actual": "conditional",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "particle_size",
+          "status": "fail",
+          "buyerQuote": "particle_size lte 5 mm",
+          "sellerQuotes": [
+            "particle_size eq 20 mm"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "micrometres",
+      "name": "5000 micrometres fits a 10 millimetre limit",
+      "expected": "stated_fit",
+      "actual": "stated_fit",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "particle_size",
+          "status": "pass",
+          "buyerQuote": "particle_size lte 10 mm",
+          "sellerQuotes": [
+            "particle_size eq 5000 um"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "overlapping-range",
+      "name": "Overlapping measured range cannot establish compliance",
+      "expected": "needs_evidence",
+      "actual": "needs_evidence",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "moisture",
+          "status": "unknown",
+          "buyerQuote": "moisture lte 0.5 %",
+          "sellerQuotes": [
+            "moisture range 0.2 % to 0.8"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pvc-present",
+      "name": "Explicit PVC presence conflicts with exclusion",
+      "expected": "blocked",
+      "actual": "blocked",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "contaminants",
+          "status": "fail",
+          "buyerQuote": "contaminants not_contains PVC",
+          "sellerQuotes": [
+            "contaminants contains PVC"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "colour-negotiable",
+      "name": "Colour mismatch is explicitly negotiable",
+      "expected": "stated_fit",
+      "actual": "stated_fit",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "pass",
+          "buyerQuote": "material eq PP",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        },
+        {
+          "attribute": "colour",
+          "status": "fail",
+          "buyerQuote": "colour eq blue",
+          "sellerQuotes": [
+            "colour eq red"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "domestic-conflict",
+      "name": "Domestic-only request cannot match foreign seller",
+      "expected": "blocked",
+      "actual": "blocked",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "pass",
+          "buyerQuote": "material eq polypropylene",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        },
+        {
+          "attribute": "moisture",
+          "status": "pass",
+          "buyerQuote": "moisture lte 0.5 %",
+          "sellerQuotes": [
+            "moisture eq 0.2 %"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hazard-conflict",
+      "name": "Hazardous declaration conflicts with buyer exclusion",
+      "expected": "blocked",
+      "actual": "blocked",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "pass",
+          "buyerQuote": "material eq polypropylene",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        },
+        {
+          "attribute": "moisture",
+          "status": "pass",
+          "buyerQuote": "moisture lte 0.5 %",
+          "sellerQuotes": [
+            "moisture eq 0.2 %"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "no-passport",
+      "name": "Legacy free-text records need measurable evidence",
+      "expected": "needs_evidence",
+      "actual": "needs_evidence",
+      "passed": true,
+      "trace": []
+    },
+    {
+      "id": "wood-compost",
+      "name": "Documented cross-family composting connection remains conditional on acceptance",
+      "expected": "needs_evidence",
+      "actual": "needs_evidence",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "treatment",
+          "status": "pass",
+          "buyerQuote": "treatment eq untreated",
+          "sellerQuotes": [
+            "treatment eq untreated"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cooking-oil-ad",
+      "name": "Cooking oil to an AD buyer is discoverable; tests remain pending",
+      "expected": "needs_evidence",
+      "actual": "needs_evidence",
+      "passed": true,
+      "trace": []
+    },
+    {
+      "id": "no-documented-route",
+      "name": "Paper cannot pass as metal feedstock",
+      "expected": "blocked",
+      "actual": "blocked",
+      "passed": true,
+      "trace": []
+    },
+    {
+      "id": "missing-source",
+      "name": "A reviewed number without evidence reference stays unknown",
+      "expected": "needs_evidence",
+      "actual": "needs_evidence",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "pass",
+          "buyerQuote": "material eq polypropylene",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        },
+        {
+          "attribute": "moisture",
+          "status": "unknown",
+          "buyerQuote": "moisture lte 0.5 %",
+          "sellerQuotes": [
+            "0.2% moisture"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prompt-injection",
+      "name": "An instruction embedded in text cannot override numeric checks",
+      "expected": "conditional",
+      "actual": "conditional",
+      "passed": true,
+      "trace": [
+        {
+          "attribute": "material",
+          "status": "pass",
+          "buyerQuote": "material eq polypropylene",
+          "sellerQuotes": [
+            "material eq PP"
+          ]
+        },
+        {
+          "attribute": "moisture",
+          "status": "fail",
+          "buyerQuote": "moisture lte 0.5 %",
+          "sellerQuotes": [
+            "moisture eq 2 %"
+          ]
+        }
+      ]
+    }
+  ],
+  "modelRepeatability": "Not measured by this deterministic benchmark; use the live evaluation script.",
+  "liveModelRepeatability": {
+    "scope": "Three repeated requests on one authored scenario; not a general accuracy estimate",
+    "trials": [
+      {
+        "model": "gemini-3.6-flash",
+        "decision": "conditional",
+        "score": 55,
+        "blockerCount": 0
+      },
+      {
+        "model": "gemini-3.6-flash",
+        "decision": "conditional",
+        "score": 70,
+        "blockerCount": 0
+      },
+      {
+        "model": "gemini-3.6-flash",
+        "decision": "conditional",
+        "score": 65,
+        "blockerCount": 0
+      }
+    ],
+    "decisionAgreement": 1
+  },
+  "liveVectorRetrieval": [
+    {
+      "id": "alias-pp",
+      "model": "gemini-embedding-001",
+      "dimensions": 768,
+      "recallAt20": 1,
+      "precisionAt1": 1,
+      "candidateCount": 31
+    },
+    {
+      "id": "process-wood",
+      "model": "gemini-embedding-001",
+      "dimensions": 768,
+      "recallAt20": 1,
+      "precisionAt1": 1,
+      "candidateCount": 31
+    }
+  ]
+}

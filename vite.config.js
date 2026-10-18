@@ -3,6 +3,7 @@ import {existsSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {localGeminiMiddleware} from './server/local-gemini.js';
 import {liveTokenHandler} from './server/live-token.js';
+import {embeddingsHandler} from './server/embeddings.js';
 
 export default defineConfig(({command}) => {
   const envFile = fileURLToPath(new URL('./.env',import.meta.url));
@@ -16,6 +17,8 @@ export default defineConfig(({command}) => {
       server.middlewares.use(localGeminiMiddleware({apiKey,port:server.config.server.port}));
       const live=liveTokenHandler({apiKey,local:true});
       server.middlewares.use((req,res,next)=>req.url==='/private-api/live-session'?live(req,res):next());
+      const embeddings=embeddingsHandler({apiKey,local:true});
+      server.middlewares.use((req,res,next)=>req.url==='/private-api/embeddings'?embeddings(req,res):next());
     }}]
   };
 });

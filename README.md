@@ -1,20 +1,24 @@
 # WasteRecast — Industrial Waste-to-Value Screening
 
-## Global buyer / seller exchange — 17 October 2026
+## Global buyer / seller exchange — 18 October 2026
 
 [Buy / Sell worldwide](https://wasterecast.web.app/#exchange) adds Google/email
 registration, owner-managed Firestore buyer requests and seller offers, country
-filters, Gemini semantic comparison and partial-fit discussion briefs. Published
+filters, evidence-linked acceptance passports, typed pass/fail/unknown checks,
+alias/vector/process retrieval, Gemini explanations, conditional processing
+investigations, quote-and-yield landed costs, human review and an evaluation lab. Published
 listings expire after 30 days; no real businesses or offers are fabricated. See
 [EXCHANGE.md](EXCHANGE.md) for data access, AI methodology, deployment, testing and
 the limits of estimated fit scores. The existing submission video/deck cover the
 earlier directory workflow and do not demonstrate the new exchange.
 
-Exchange verification: **44 automated tests passed**, plus **21 live access
-checks** and **11 Firebase SDK integration checks**. The deployed browser flow
-returned real Gemini semantic results for three labelled scenarios, including
-partial PP fits and an incompatible PET buyer. All temporary QA accounts and
-database records were removed. These checks are not an accuracy or load benchmark.
+Upgrade verification: **57 automated tests passed**; the 24 authored acceptance
+scenarios passed their proposed labels. A live public Vercel embedding request
+returned real 768-dimensional Gemini vectors and passed owner-private durable
+quota checks. Three live model runs kept the same conditional decision while
+scores varied (55, 70, 65). Authored vector fixtures retrieved their relevant item
+at rank one. These are scoped software checks, not independent expert validation,
+real-market accuracy or a load benchmark. See the methodology for exact limits.
 
 ## AI Builder Cup submission / Clorex
 

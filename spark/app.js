@@ -12,6 +12,8 @@ import {assistantSchema,validateAssistantCommand} from './assistant-core.js';
 import {getLanguage,languages} from './preferences.js';
 import {transcriptionSchema,AUDIO_TYPES,audioType} from './voice.js';
 import {exchangeSchema} from './exchange-core.js';
+import {contractSchema} from './material-contract.js';
+import {getAuth} from 'firebase/auth';
 
 const bundledCatalog = await fetch('/catalog.json').then(response => {
   if (!response.ok) throw new Error('The public facility catalog could not be loaded.');
@@ -69,7 +71,7 @@ async function generate(content, schema = null, thinkingLevel = 'low') {
   if (localGemini) {
     report('Connecting to Gemini through the private local backend…');
     try {
-      const kind = schema === profileSchema ? 'profile' : schema === shortlistSchema ? 'shortlist' : schema === assistantSchema ? 'assistant' : schema===transcriptionSchema?'transcribe':schema===exchangeSchema?'exchange':'explain';
+      const kind = schema === profileSchema ? 'profile' : schema === shortlistSchema ? 'shortlist' : schema === assistantSchema ? 'assistant' : schema===transcriptionSchema?'transcribe':schema===exchangeSchema?'exchange':schema===contractSchema?'contract':'explain';
       const response = await fetch('/private-api/gemini',{method:'POST',headers:{'Content-Type':'application/json','X-WasteRecast-Local':'1'},body:JSON.stringify({kind,content})});
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Local Gemini connection failed.');
@@ -202,8 +204,19 @@ async function request(url, options = {}) {
   throw new Error('Unknown action.');
 }
 window.wasteRecast = {request,countries, getCatalogLocation:()=>catalogLocation, getDiscoveryAttribution:()=>discoveryAttribution};
+async function embedMaterials(texts){
+  const headers={'Content-Type':'application/json'};
+  if(localGemini)headers['X-WasteRecast-Local']='1';
+  else{
+    const user=getAuth(firebaseApp).currentUser;
+    if(!user?.emailVerified)throw new Error('Sign in with a verified email to enable vector retrieval. Alias and process search remain available.');
+    headers.Authorization='Bearer '+await user.getIdToken();headers['X-Firebase-AppCheck']=await verifyAppCheck();
+  }
+  const response=await fetch(localGemini?'/private-api/embeddings':'https://wasterecast.vercel.app/api/embeddings',{method:'POST',headers,body:JSON.stringify({texts}),signal:AbortSignal.timeout(40000)});
+  const data=await response.json();if(!response.ok)throw new Error(data.error || 'Vector retrieval is unavailable.');return data;
+}
 await import('./app-ui.js');
 if(firebaseApp && firestore){
   const {initExchange}=await import('./exchange-ui.js');
-  initExchange({app:firebaseApp,db:firestore,generate});
+  initExchange({app:firebaseApp,db:firestore,generate,embed:embedMaterials});
 }

@@ -77,9 +77,38 @@ def main():
         check('Private member hidden publicly',requests.get(BASE+'/'+member,timeout=30),(403,))
         check('Private member hidden from another account',requests.get(BASE+'/'+member,headers=token_headers(b),timeout=30),(403,))
         check('Private member owner read',requests.get(BASE+'/'+member,headers=token_headers(a),timeout=30))
+        if '--embeddings' in sys.argv:
+            app='projects/525628234892/apps/1:525628234892:web:974fd37d6954276ab26fa9'
+            app_base='https://firebaseappcheck.googleapis.com/v1'
+            secret=str(uuid.uuid4());credential=None
+            try:
+                r=requests.post(f'{app_base}/{app}/debugTokens',headers=admin_headers,json={'displayName':'Temporary WasteRecast embedding diagnosis','token':secret},timeout=30);r.raise_for_status();credential=r.json()['name']
+                r=requests.post(f'{app_base}/{app}:exchangeDebugToken',headers={'x-goog-api-key':key},json={'debugToken':secret},timeout=30);r.raise_for_status();attestation=r.json()['token']
+                endpoint='https://wasterecast.vercel.app/api/embeddings'
+                embedding_headers={**token_headers(a),'Origin':'https://wasterecast.web.app','X-Firebase-AppCheck':attestation}
+                payload={'texts':[{'id':'q','text':'Clean polypropylene injection moulding offcuts.'},{'id':'buyer','text':'PP rigid regrind for mechanical compounding.'}]}
+                check('Public embeddings require attestation',requests.post(endpoint,headers={**token_headers(a),'Origin':embedding_headers['Origin']},json=payload,timeout=45),(401,))
+                check('Public embeddings require verified account',requests.post(endpoint,headers={**embedding_headers,**token_headers(b)},json=payload,timeout=45),(401,))
+                budget=f'exchangeMembers/{a["localId"]}/embeddingBudget/daily';docs.append(budget)
+                r=requests.post(endpoint,headers=embedding_headers,json=payload,timeout=45);check('Real public embedding request',r)
+                result=r.json();assert result['model']=='gemini-embedding-001' and result['dimensions']==768 and [x['id'] for x in result['vectors']]==['q','buyer'];assert all(len(x['values'])==768 for x in result['vectors'])
+                check('Embedding budget private to owner',requests.get(BASE+'/'+budget,headers=token_headers(b),timeout=30),(403,))
+                r=requests.get(BASE+'/'+budget,headers=token_headers(a),timeout=30);check('Embedding budget reserved durably',r);assert r.json()['fields']['count']['integerValue']=='2'
+                current=r.json()['fields']
+                decrement={'writes':[{'update':{'name':DB+'/'+budget,'fields':{**current,'count':{'integerValue':'1'}}}}]}
+                check('Embedding budget decrement denied',requests.post(BASE+':commit',headers=token_headers(a),json=decrement,timeout=30),(403,))
+                review=f'exchangeMembers/{a["localId"]}/reviews/qa-review';docs.append(review)
+                review_write={'writes':[{'update':{'name':DB+'/'+review,'fields':{'payload':encode(json.dumps({'recordType':'benchmark_annotation','caseId':'qa-case','label':'needs_evidence','notes':'Temporary QA fixture'}))}},'updateTransforms':[{'fieldPath':'updatedAt','setToServerValue':'REQUEST_TIME'}]}]}
+                check('Private human annotation write',requests.post(BASE+':commit',headers=token_headers(a),json=review_write,timeout=30))
+                check('Human annotation hidden from other account',requests.get(BASE+'/'+review,headers=token_headers(b),timeout=30),(403,))
+                print(json.dumps({'stage':'real_public_embedding_service','model':result['model'],'dimensions':result['dimensions'],'durable_budget':'passed','private_human_annotations':'passed'}))
+            finally:
+                if credential:
+                    revoked=requests.delete(f'{app_base}/{credential}',headers=admin_headers,timeout=30);revoked.raise_for_status();print('Temporary App Check diagnosis credential revoked.')
         if '--sdk' in sys.argv:
             # Slot zero is already occupied; SDK creates slot one, then edits/pauses it.
             docs.append(f'exchangeListings/{a["localId"]}_1')
+            docs.append(f'exchangeMembers/{a["localId"]}/reviews/sdk-review')
             subprocess.run(['node','scripts/check_exchange_store.mjs'],input=json.dumps({'email':a['qaEmail'],'password':a['qaPassword']}),text=True,cwd=ROOT,check=True,timeout=120)
         print(json.dumps({'passed':len(passed),'checks':passed},indent=2))
     finally:

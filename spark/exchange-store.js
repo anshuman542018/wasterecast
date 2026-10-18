@@ -33,6 +33,8 @@ export function exchangeStore(app,db) {
       return id;
     },
     async pause(id){const user=requireUser();const ref=doc(db,'exchangeListings',id);const snap=await getDoc(ref);if(!snap.exists()||snap.data().ownerId!==user.uid)throw new Error('Only the owner can pause this listing.');await setDoc(ref,{...snap.data(),status:'paused',updatedAt:serverTimestamp()});},
+    async saveReview(id,payload){const user=requireUser();if(!user.emailVerified)throw new Error('Verify your email to save an evaluation or business outcome.');await setDoc(doc(db,'exchangeMembers',user.uid,'reviews',id),{payload:JSON.stringify(payload),updatedAt:serverTimestamp()});},
+    async reviews(){const user=requireUser();const snap=await getDocs(query(collection(db,'exchangeMembers',user.uid,'reviews'),orderBy('updatedAt','desc'),limit(100)));return snap.docs.map(d=>({id:d.id,...d.data()}));},
     async browse({role,country='',family='',cursor=null}){
       const filters=[where('role','==',role),where('status','==','published'),where('expiresAt','>',Timestamp.now())];
       if(country)filters.push(where('country','==',country));if(family)filters.push(where('family','==',family));

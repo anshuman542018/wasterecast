@@ -7,7 +7,8 @@ service cloud.firestore {
     function nullableNumber(value) { return value == null || (value is number && value >= 0 && value <= 1000000000); }
     function validListing(d, listingId) {
       return d.keys().hasAll(['ownerId','slot','role','organization','title','family','country','city','description','specifications','exclusions','hazard','tradeScope','quantity','price','currency','publicContact','contactConsent','status','createdAt','updatedAt','expiresAt'])
-        && d.keys().hasOnly(['ownerId','slot','role','organization','title','family','country','city','description','specifications','exclusions','hazard','tradeScope','quantity','price','currency','publicContact','contactConsent','status','createdAt','updatedAt','expiresAt'])
+        && d.keys().hasOnly(['ownerId','slot','role','organization','title','family','country','city','description','specifications','exclusions','hazard','tradeScope','quantity','price','currency','publicContact','contactConsent','status','createdAt','updatedAt','expiresAt','passport'])
+        && shortString(d.get('passport',''),10000)
         && d.ownerId == request.auth.uid && d.slot is int && d.slot >= 0 && d.slot < 10
         && listingId == request.auth.uid + '_' + string(d.slot)
         && d.role in ['buyer','seller'] && d.status in ['published','paused']
@@ -36,6 +37,17 @@ service cloud.firestore {
         && request.resource.data.country is string && request.resource.data.country.matches('^[A-Z]{2}$')
         && request.resource.data.updatedAt == request.time;
       allow delete: if signedIn() && request.auth.uid == uid;
+      match /embeddingBudget/{bucket} {
+        function validBudget() { return request.resource.data.keys().hasAll(['count','windowStart']) && request.resource.data.keys().hasOnly(['count','windowStart']) && request.resource.data.count is int && request.resource.data.count > 0 && request.resource.data.count <= 240 && request.resource.data.windowStart is timestamp; }
+        allow get: if signedIn() && request.auth.uid == uid;
+        allow create: if verified() && request.auth.uid == uid && bucket == 'daily' && validBudget() && request.resource.data.count <= 33 && request.resource.data.windowStart == request.time;
+        allow update: if verified() && request.auth.uid == uid && bucket == 'daily' && validBudget() && ((request.resource.data.windowStart == resource.data.windowStart && request.resource.data.count > resource.data.count && request.resource.data.count <= resource.data.count + 33) || (resource.data.windowStart <= request.time - duration.value(1,'d') && request.resource.data.windowStart == request.time && request.resource.data.count <= 33));
+      }
+      match /reviews/{reviewId} {
+        allow read: if signedIn() && request.auth.uid == uid;
+        allow create, update: if verified() && request.auth.uid == uid && request.resource.data.keys().hasAll(['payload','updatedAt']) && request.resource.data.keys().hasOnly(['payload','updatedAt']) && shortString(request.resource.data.payload,12000) && request.resource.data.updatedAt == request.time;
+        allow delete: if signedIn() && request.auth.uid == uid;
+      }
     }
     match /exchangeListings/{listingId} {
       allow get: if (signedIn() && listingId.matches(request.auth.uid + '_[0-9]')) || resource.data.status == 'published';

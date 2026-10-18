@@ -18,8 +18,9 @@
 ## Live app addition — global registered exchange
 
 The live app now also supports authenticated buyer requests and seller offers,
-Firestore persistence, country filters and Gemini semantic comparison with
-partial-fit discussion briefs. See [the exchange methodology](../EXCHANGE.md).
+Firestore persistence, country filters, typed evidence passports, real vector /
+alias / process retrieval, conditional processing investigations, separate landed
+costs and an evaluation lab. See [the exchange methodology](../EXCHANGE.md).
 The existing pitch deck and video cover the earlier directory workflow; they
 do not show this new exchange. The brief description has been updated to make
 that distinction explicit. No commercial users or transactions are fabricated.

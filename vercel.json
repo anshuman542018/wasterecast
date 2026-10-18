@@ -2,5 +2,5 @@
   "buildCommand":"npm run build",
   "outputDirectory":"dist",
   "framework":null,
-  "functions":{"api/live-session.js":{"maxDuration":30}}
+  "functions":{"api/live-session.js":{"maxDuration":30},"api/embeddings.js":{"maxDuration":60}}
 }
