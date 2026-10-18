@@ -1,43 +1,45 @@
-# WasteRecast — three-minute demo
+# WasteRecast / updated three-minute demonstration
 
-Team: Clorex. Recorded 17 October 2026. Synthetic narration (Microsoft Zira). Actual application captures, with pauses and waiting time edited. The AI walkthrough uses the private local server; deployed public profiling uses Firebase AI Logic and was confirmed working by the participant in Chrome/Edge on the same date. No simulated AI responses, contacts, prices or transactions.
+Team: Clorex. Captured 18 October 2026 from the deployed public site. Actual interface captures with waiting time and pauses edited. The material, counterpart listings and commercial values are explicitly illustrative and not marketplace businesses or quotes. Real Gemini explanations run through Firebase AI Logic. This signed-out recording shows the labelled alias/process fallback, not a verified-account vector session. Actual embedding service checks and their scope are in Matching_Evaluation.json.
 
-## 0:00 — 01 / WasteRecast by Clorex
+Narration: the participant recorded these chapters in their own voice through the private local studio. Audio loudness is balanced, with no speech generation, voice cloning or speed-up. The in-app Recast Live voice is separate and unchanged.
 
-WasteRecast helps a business turn an unclear waste description into recovery leads and an acceptance enquiry. Our Sustainability and Social Impact prototype focuses on a practical obstacle: knowing which facility is worth approaching, and what evidence is still missing.
+## 0:00 / WasteRecast / Clorex
 
-## 0:16 — 02 / An explicitly labelled scenario
+A business may have reusable waste, but finding a buyer is only the beginning. The real question is whether that material meets the buyer's requirements. WasteRecast helps both sides work through that decision.
 
-Here we enter an illustrative scenario: five tonnes per month of polypropylene offcuts in Pune. The records are real public listings; this producer scenario is not real. This recording uses our private local Gemini connection. The public website uses Firebase AI Logic.
+## 0:14 / A global buyer-seller exchange
 
-## 0:34 — 03 / Gemini extracts facts and gaps
+Buyers publish what they accept. Sellers describe what they have. Verified accounts manage their listings in Firestore, with country filters and thirty-day expiry. Public directory records stay separate. Here, we're demonstrating a clearly labelled scenario, not real businesses.
 
-Gemini identifies plastic, extracts the stated quantity and location, and lists missing laboratory results and buyer quotes. Source and checks exposes the input quotations. The model's confidence is an extraction estimate, not measured accuracy or proof that a recycler can accept this material.
+## 0:32 / Evidence before an estimated fit score
 
-## 0:54 — 04 / Source-linked recovery leads
+Our seller has polypropylene offcuts with two percent moisture. The evidence passport records values, units, source quotations, and whether a person reviewed them. Gemini can extract facts from optional documents. Unreviewed or missing measurements stay unknown until someone checks them.
 
-Find recovery leads screens the sourced catalog. We show five leads first, ordered by state and district proximity. Asking Gemini to review produces a recovery-route hypothesis and the key unanswered question. These are potential leads, not confirmed buyers, live prices, or road-distance rankings.
+## 0:51 / Search by meaning, then check compatibility
 
-## 1:15 — 05 / Inspect the evidence
+Retrieval combines material aliases, documented process connections, and real Gemini embeddings for verified users. Reciprocal rank fusion combines these searches. This signed-out demonstration clearly shows its alias and process fallback. Gemini then explains each candidate's fit.
 
-For A K Enterprises, the source identifies plastic granules and links to page eighty-one of the Maharashtra board directory. The app asks for current authorization, exact accepted composition, capacity and a written price. Published contact details are shown where available; missing phone numbers and email addresses are not invented.
+## 1:13 / A partial match with a specific next step
 
-## 1:36 — 06 / Prepare an acceptance enquiry
+The polymer matches, but moisture exceeds the buyer's limit. The material still fails. A sourced drying investigation requires a trial, measured yield, a retest, and written acceptance. We never assume that processing will work.
 
-Prepare enquiry creates a draft containing the material, quantity, origin, source link and questions for the facility. Nothing is sent automatically. All four review checks start unconfirmed. A user can save the lead, copy the draft, or print it as a PDF after reviewing the information.
+## 1:30 / Unknown facts and incompatible materials
 
-## 1:58 — 07 / Economics waits for real quotes
+Another buyer needs missing melt-flow evidence. That stays unknown. A P E T buyer is blocked by incompatible polymer identity. AI scores cannot override these fixed checks.
 
-The commercial calculator belongs to the selected facility. Without actual buyer and transport quotes, its value remains pending. Once supplied, it annualizes the quantity times avoided disposal cost plus the buyer quote, minus transport and pretreatment. Gemini does not invent revenue or environmental savings.
+## 1:46 / Separate technical fit from landed cost
 
-## 2:18 — 08 / Recast controls the workflow
+Commercial feasibility is separate. These illustrative costs total thirteen hundred and fifty euros. At ninety percent assumed usable yield, that means three hundred euros per usable tonne, twenty euros above the entered budget.
 
-Recast also supports natural-language app actions. We type, prepare enquiry for lead one. The assistant interprets the request and opens the actual enquiry. Live voice uses Gemini and the Aoede voice with a selectable microphone. Only validated application tools can run.
+## 2:05 / Evidence that can be challenged
 
-## 2:36 — 09 / Accessible, deliberate interface
+The evaluation lab passes twenty-four authored acceptance scenarios. They're test cases, not independent accuracy results. Private reviewer annotations support scrutiny. Real sample trials and expert validation remain our next step.
 
-The interface includes four language options, light and dark modes, optional documents and clear next steps. Worldwide discovery uses open map records, with material acceptance explicitly unverified.
+## 2:25 / A workflow people can use
 
-## 2:48 — 10 / Built on Firebase and Gemini
+A discussion brief carries the evidence and unanswered questions. Nothing is sent automatically. The app also offers sourced recovery leads, multilingual controls, themes, and Recast's conversational assistant.
 
-Firebase hosts the app. Firestore serves the catalog. Gemini powers understanding and Recast. Our next step is a verified buyer pilot. Explore WasteRecast and the public source code.
+## 2:42 / Firebase, Firestore and Gemini / live today
+
+Firebase hosts the app. Authentication and Firestore support the exchange. Gemini powers extraction, explanations, embeddings, and live conversation. Our private backend protects the key. Try the public prototype.

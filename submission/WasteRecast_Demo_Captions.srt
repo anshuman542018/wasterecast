@@ -1,209 +1,205 @@
 1
-00:00:00,250 --> 00:00:04,579
-WasteRecast helps a business turn an unclear
-waste description into recovery
+00:00:00,200 --> 00:00:05,415
+A business may have reusable waste, but finding
+a buyer is only
 
 2
-00:00:04,579 --> 00:00:08,909
-leads and an acceptance enquiry. Our
-Sustainability and Social Impact prototype
+00:00:05,415 --> 00:00:09,760
+the beginning. The real question is whether that
+material meets
 
 3
-00:00:08,909 --> 00:00:13,238
-focuses on a practical obstacle: knowing which
-facility is worth approaching,
+00:00:09,760 --> 00:00:13,671
+the buyer's requirements. WasteRecast helps both
+sides work through
 
 4
-00:00:13,238 --> 00:00:15,600
-and what evidence is still missing.
+00:00:13,671 --> 00:00:14,540
+that decision.
 
 5
-00:00:16,250 --> 00:00:21,207
-Here we enter an illustrative scenario: five
-tonnes per month of polypropylene
+00:00:14,786 --> 00:00:17,171
+Buyers publish what they accept.
 
 6
-00:00:21,207 --> 00:00:26,164
-offcuts in Pune. The records are real public
-listings; this producer scenario
+00:00:17,171 --> 00:00:19,557
+Sellers describe what they have.
 
 7
-00:00:26,164 --> 00:00:30,708
-is not real. This recording uses our private
-local Gemini connection.
+00:00:19,557 --> 00:00:23,852
+Verified accounts manage their listings in
+Firestore, with country
 
 8
-00:00:30,708 --> 00:00:33,600
-The public website uses Firebase AI Logic.
+00:00:23,852 --> 00:00:28,146
+filters and thirty-day expiry. Public directory
+records stay separate.
 
 9
-00:00:34,250 --> 00:00:38,750
-Gemini identifies plastic, extracts the stated
-quantity and location, and
+00:00:28,146 --> 00:00:32,441
+Here, we're demonstrating a clearly labelled
+scenario, not real
 
 10
-00:00:38,750 --> 00:00:41,900
-lists missing laboratory results and buyer
-quotes.
+00:00:32,441 --> 00:00:32,918
+businesses.
 
 11
-00:00:41,900 --> 00:00:45,050
-Source and checks exposes the input quotations.
+00:00:33,164 --> 00:00:37,294
+Our seller has polypropylene offcuts with two
+percent moisture.
 
 12
-00:00:45,050 --> 00:00:49,550
-The model's confidence is an extraction
-estimate, not measured accuracy
+00:00:37,294 --> 00:00:40,965
+The evidence passport records values, units,
+source quotations,
 
 13
-00:00:49,550 --> 00:00:53,600
-or proof that a recycler can accept this
-material.
+00:00:40,965 --> 00:00:43,719
+and whether a person reviewed them.
 
 14
-00:00:54,250 --> 00:00:57,563
-Find recovery leads screens the sourced catalog.
+00:00:43,719 --> 00:00:46,931
+Gemini can extract facts from optional
+documents.
 
 15
-00:00:57,563 --> 00:01:02,769
-We show five leads first, ordered by state and
-district proximity.
+00:00:46,931 --> 00:00:51,062
+Unreviewed or missing measurements stay unknown
+until someone checks
 
 16
-00:01:02,769 --> 00:01:07,974
-Asking Gemini to review produces a recovery-
-route hypothesis and the key
+00:00:51,062 --> 00:00:51,521
+them.
 
 17
-00:01:07,974 --> 00:01:12,707
-unanswered question. These are potential leads,
-not confirmed buyers, live
+00:00:51,766 --> 00:00:56,059
+Retrieval combines material aliases, documented
+process connections,
 
 18
-00:01:12,707 --> 00:01:14,600
-prices, or road-distance rankings.
+00:00:56,059 --> 00:01:00,353
+and real Gemini embeddings for verified users.
 
 19
-00:01:15,250 --> 00:01:20,234
-For A K Enterprises, the source identifies
-plastic granules and links to
+00:01:00,353 --> 00:01:04,033
+Reciprocal rank fusion combines these searches.
 
 20
-00:01:20,234 --> 00:01:23,141
-page eighty-one of the Maharashtra board
-directory.
+00:01:04,033 --> 00:01:09,553
+This signed-out demonstration clearly shows its
+alias and process
 
 21
-00:01:23,141 --> 00:01:27,294
-The app asks for current authorization, exact
-accepted composition, capacity
+00:01:09,553 --> 00:01:13,846
+fallback. Gemini then explains each candidate's
+fit.
 
 22
-00:01:27,294 --> 00:01:31,862
-and a written price. Published contact details
-are shown where available;
+00:01:14,092 --> 00:01:18,400
+The polymer matches, but moisture exceeds the
+buyer's limit.
 
 23
-00:01:31,862 --> 00:01:35,600
-missing phone numbers and email addresses are
-not invented.
+00:01:18,400 --> 00:01:22,708
+The material still fails. A sourced drying
+investigation requires
 
 24
-00:01:36,250 --> 00:01:40,891
-Prepare enquiry creates a draft containing the
-material, quantity, origin,
+00:01:22,708 --> 00:01:27,016
+a trial, measured yield, a retest, and written
+acceptance.
 
 25
-00:01:40,891 --> 00:01:44,140
-source link and questions for the facility.
+00:01:27,016 --> 00:01:30,367
+We never assume that processing will work.
 
 26
-00:01:44,140 --> 00:01:48,782
-Nothing is sent automatically. All four review
-checks start unconfirmed.
+00:01:30,613 --> 00:01:34,190
+Another buyer needs missing melt-flow evidence.
 
 27
-00:01:48,782 --> 00:01:56,672
-A user can save the lead, copy the draft, or
-print it as a PDF after reviewing
+00:01:34,190 --> 00:01:41,939
+That stays unknown. A P E T buyer is blocked by
+incompatible polymer
 
 28
-00:01:56,672 --> 00:01:57,600
-the information.
+00:01:41,939 --> 00:01:46,708
+identity. AI scores cannot override these fixed
+checks.
 
 29
-00:01:58,250 --> 00:02:01,768
-The commercial calculator belongs to the
-selected facility.
+00:01:46,954 --> 00:01:51,453
+Commercial feasibility is separate. These
+illustrative costs total
 
 30
-00:02:01,768 --> 00:02:06,166
-Without actual buyer and transport quotes, its
-value remains pending.
+00:01:51,453 --> 00:01:54,265
+thirteen hundred and fifty euros.
 
 31
-00:02:06,166 --> 00:02:11,003
-Once supplied, it annualizes the quantity times
-avoided disposal cost plus
+00:01:54,265 --> 00:01:59,889
+At ninety percent assumed usable yield, that
+means three hundred
 
 32
-00:02:11,003 --> 00:02:14,082
-the buyer quote, minus transport and
-pretreatment.
+00:01:59,889 --> 00:02:05,513
+euros per usable tonne, twenty euros above the
+entered budget.
 
 33
-00:02:14,082 --> 00:02:17,600
-Gemini does not invent revenue or environmental
-savings.
+00:02:05,758 --> 00:02:11,088
+The evaluation lab passes twenty-four authored
+acceptance scenarios.
 
 34
-00:02:18,250 --> 00:02:20,789
-Recast also supports natural-language app
-actions.
+00:02:11,088 --> 00:02:15,751
+They're test cases, not independent accuracy
+results.
 
 35
-00:02:20,789 --> 00:02:23,751
-We type, prepare enquiry for lead one.
+00:02:15,751 --> 00:02:19,082
+Private reviewer annotations support scrutiny.
 
 36
-00:02:23,751 --> 00:02:27,983
-The assistant interprets the request and opens
-the actual enquiry.
+00:02:19,082 --> 00:02:25,744
+Real sample trials and expert validation remain
+our next step.
 
 37
-00:02:27,983 --> 00:02:33,061
-Live voice uses Gemini and the Aoede voice with
-a selectable microphone.
+00:02:25,990 --> 00:02:31,570
+A discussion brief carries the evidence and
+unanswered questions.
 
 38
-00:02:33,061 --> 00:02:35,600
-Only validated application tools can run.
+00:02:31,570 --> 00:02:37,769
+Nothing is sent automatically. The app also
+offers sourced recovery
 
 39
-00:02:36,250 --> 00:02:40,874
-The interface includes four language options,
-light and dark modes, optional
+00:02:37,769 --> 00:02:42,109
+leads, multilingual controls, themes, and
+Recast's conversational
 
 40
-00:02:40,874 --> 00:02:45,498
-documents and clear next steps. Worldwide
-discovery uses open map records,
+00:02:42,109 --> 00:02:42,729
+assistant.
 
 41
-00:02:45,498 --> 00:02:47,600
-with material acceptance explicitly unverified.
+00:02:42,974 --> 00:02:48,432
+Firebase hosts the app. Authentication and
+Firestore support the
 
 42
-00:02:48,250 --> 00:02:51,493
-Firebase hosts the app. Firestore serves the
-catalog.
+00:02:48,432 --> 00:02:52,677
+exchange. Gemini powers extraction,
+explanations, embeddings, and
 
 43
-00:02:51,493 --> 00:02:56,357
-Gemini powers understanding and Recast. Our next
-step is a verified buyer
+00:02:52,677 --> 00:02:57,529
+live conversation. Our private backend protects
+the key.
 
 44
-00:02:56,357 --> 00:02:59,600
-pilot. Explore WasteRecast and the public source
-code.
+00:02:57,529 --> 00:02:59,954
+Try the public prototype.

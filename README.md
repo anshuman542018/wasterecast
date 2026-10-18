@@ -9,8 +9,8 @@ alias/vector/process retrieval, Gemini explanations, conditional processing
 investigations, quote-and-yield landed costs, human review and an evaluation lab. Published
 listings expire after 30 days; no real businesses or offers are fabricated. See
 [EXCHANGE.md](EXCHANGE.md) for data access, AI methodology, deployment, testing and
-the limits of estimated fit scores. The existing submission video/deck cover the
-earlier directory workflow and do not demonstrate the new exchange.
+the limits of estimated fit scores. The updated submission deck and three-minute video demonstrate the exchange,
+acceptance checks, conditional investigations, landed costs and evaluation lab.
 
 Upgrade verification: **57 automated tests passed**; the 24 authored acceptance
 scenarios passed their proposed labels. A live public Vercel embedding request
@@ -27,11 +27,11 @@ brief description, transcript and verification checklist are in
 [submission/](submission/README.md). The public prototype remains
 [wasterecast.web.app](https://wasterecast.web.app/).
 
-Validation on 17 October 2026: 39 automated tests passed; Firebase AI Logic
-profiling returned a real structured result; the deployed Gemini Live token
-service passed an audio/tool smoke test. The participant confirmed public
-profiling works in Chrome/Edge. Codex's connected in-app browser could not fetch
-the public AI endpoint; that limitation is recorded separately in the checklist.
+The updated demonstration uses actual public-app captures, real Gemini explanations
+and explicitly illustrative material/counterpart/cost inputs. The participant
+records their own narration. It visibly shows the signed-out alias/process fallback;
+real verified-account embeddings were checked separately. See the submission
+checklist and evaluation report for scope and limitations.
 
 A source-attributed working prototype for the AI Builder Cup 2026 **Sustainability & Social Impact** theme. The app profiles waste and surplus materials from 16 families, including solids, liquids, organics, electronics, and construction waste. It screens public recycler records and prepares a preliminary facility dossier.
 

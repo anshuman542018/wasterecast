@@ -184,6 +184,8 @@ vector cache/index, stronger abuse/moderation controls, broader process coverage
 independent evaluation and operational monitoring. A bounded browser pool and free
 quotas do not establish million-record production capacity or a perfect matcher.
 
-The prescribed deck and original three-minute video cover the earlier directory
-workflow, not every feature of this upgrade. Do not claim this new workflow is
-already demonstrated in that recording.
+The updated prescribed deck and three-minute demonstration cover this exchange,
+typed acceptance checks, conditional processing investigations, landed costs and
+the evaluation lab. The signed-out recording visibly shows alias/process fallback.
+Verified-user vector calls and Firestore persistence were tested separately; the
+video does not claim to demonstrate an authenticated publication or vector session.

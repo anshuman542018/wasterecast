@@ -19,3 +19,6 @@ dist/
 .vercel
 .env*
 !.env.example
+
+# Private submission authoring and participant microphone recordings.
+/.submission-build/
